@@ -247,8 +247,6 @@ static constexpr std::array<sha2_word64, 8> sha512_initial_hash_value = {0x6a09e
  * Constant used by SHA256/384/512_End() functions for converting the
  * digest to a readable hexadecimal character string:
  */
-static constexpr std::array<char, 17> sha2_hex_digits = {"0123456789abcdef"};
-
 
 /*** SHA-1: ***********************************************************/
 void sha1_Init(trezor::SHA1_CTX* context)
@@ -600,6 +598,7 @@ void sha1_Final(trezor::SHA1_CTX* context, sha2_byte digest[])
 
 char* sha1_End(trezor::SHA1_CTX* context, char buffer[])
 {
+    static constexpr std::array<char, 17> sha2_hex_digits = {"0123456789abcdef"};
     sha2_byte digest[SHA1_RAW_BYTES_LENGTH], *d = digest;
 
     if (buffer != (char*)0) {
@@ -903,19 +902,23 @@ void sha256_Final(trezor::SHA256_CTX* context, sha2_byte digest[]) {
     std::memset(context, 0, sizeof(trezor::SHA256_CTX));
 }
 
-char* sha256_End(trezor::SHA256_CTX* context, char buffer[])
+char* sha256_End(trezor::SHA256_CTX* context, char buffer[SHA256_HEX_STRING_LENGTH])
 {
-    sha2_byte digest[SHA256_RAW_BYTES_LENGTH], *d = digest;
+    static constexpr std::array<char, 17> sha2_hex_digits = {"0123456789abcdef"};
+    sha2_byte digest[SHA256_RAW_BYTES_LENGTH] = {0};
+    const uint8_t* d = digest;
 
     if (buffer != (char*)0) {
         sha256_Final(context, digest);
 
-        for (size_t i = 0; i < SHA256_RAW_BYTES_LENGTH; i++) {
-            *buffer++ = sha2_hex_digits[(*d & 0xf0) >> 4];
-            *buffer++ = sha2_hex_digits[*d & 0x0f];
+        int j = 0;
+        for (size_t i = 0; i < SHA256_RAW_BYTES_LENGTH; ++i) {
+            buffer[j] = sha2_hex_digits[(*d & 0xf0) >> 4];
+            buffer[++j] = sha2_hex_digits[*d & 0x0f];
+            ++j;
             d++;
         }
-        *buffer = (char)0;
+        buffer[SHA256_HEX_STRING_LENGTH - 1] = 0;
     } else {
         std::memset(context, 0, sizeof(trezor::SHA256_CTX));
     }
@@ -1212,6 +1215,7 @@ void sha512_Final(trezor::SHA512_CTX* context, sha2_byte digest[]) {
 
 char* sha512_End(trezor::SHA512_CTX* context, char buffer[])
 {
+    static constexpr std::array<char, 17> sha2_hex_digits = {"0123456789abcdef"};
     sha2_byte digest[SHA512_RAW_BYTES_LENGTH], *d = digest;
 
     if (buffer != (char*)0) {

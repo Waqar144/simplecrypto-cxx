@@ -115,11 +115,11 @@ char* sha256_End(trezor::SHA256_CTX*, char[SHA256_HEX_STRING_LENGTH]);
 /**
  * @brief output hash in raw bytes
  */
-void sha256(const uint8_t*, std::size_t, uint8_t[SHA256_RAW_BYTES_LENGTH]);
+void sha256(const uint8_t*, std::size_t, uint8_t output[SHA256_RAW_BYTES_LENGTH]);
 /**
  * @brief returns hash in hexadecimal
  */
-char* sha256HexString(const uint8_t*, std::size_t, char[SHA256_HEX_STRING_LENGTH]);
+char* sha256HexString(const uint8_t*, std::size_t, char output[SHA256_HEX_STRING_LENGTH]);
 
 void sha512_Transform(const uint64_t* state_in, const uint64_t* data, uint64_t* state_out);
 void sha512_Init(trezor::SHA512_CTX*);
