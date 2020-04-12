@@ -30,7 +30,7 @@
 
 #include "sha2.hpp"
 
-#include "memzero.h"
+//#include "memzero.h"
 
 #include <cstdint>
 #include <cstring>
@@ -285,8 +285,8 @@ static const char *sha2_hex_digits = "0123456789abcdef";
 /*** SHA-1: ***********************************************************/
 void sha1_Init(trezor::SHA1_CTX* context) {
 	MEMCPY_BCOPY(context->state, sha1_initial_hash_value, SHA1_DIGEST_LENGTH);
-	memzero(context->buffer, SHA1_BLOCK_LENGTH);
-	context->bitcount = 0;
+    std::memset(context->buffer, 0, SHA1_BLOCK_LENGTH);
+    context->bitcount = 0;
 }
 
 #ifdef SHA2_UNROLL_TRANSFORM
@@ -575,17 +575,18 @@ void sha1_Update(trezor::SHA1_CTX* context, const sha2_byte *data, size_t len) {
 	}
 }
 
-void sha1_Final(trezor::SHA1_CTX* context, sha2_byte digest[]) {
-	unsigned int	usedspace;
+void sha1_Final(trezor::SHA1_CTX* context, sha2_byte digest[])
+{
+    unsigned int usedspace{};
 
-	/* If no digest buffer is passed, we don't bother doing this: */
-	if (digest != (sha2_byte*)0) {
-		usedspace = (context->bitcount >> 3) % SHA1_BLOCK_LENGTH;
-		/* Begin padding with a 1 bit: */
-		((uint8_t*)context->buffer)[usedspace++] = 0x80;
+    /* If no digest buffer is passed, we don't bother doing this: */
+    if (digest != (sha2_byte*)0) {
+        usedspace = (context->bitcount >> 3) % SHA1_BLOCK_LENGTH;
+        /* Begin padding with a 1 bit: */
+        ((uint8_t*)context->buffer)[usedspace++] = 0x80;
 
-		if (usedspace > SHA1_SHORT_BLOCK_LENGTH) {
-			memzero(((uint8_t*)context->buffer) + usedspace, SHA1_BLOCK_LENGTH - usedspace);
+        if (usedspace > SHA1_SHORT_BLOCK_LENGTH) {
+            std::memset(context->buffer + usedspace, 0, SHA1_BLOCK_LENGTH - usedspace);
 
 #if BYTE_ORDER == LITTLE_ENDIAN
 			/* Convert TO host byte order */
@@ -593,14 +594,14 @@ void sha1_Final(trezor::SHA1_CTX* context, sha2_byte digest[]) {
 				REVERSE32(context->buffer[j],context->buffer[j]);
 			}
 #endif
-			/* Do second-to-last transform: */
-			sha1_Transform(context->state, context->buffer, context->state);
+            /* Do second-to-last transform: */
+            sha1_Transform(context->state, context->buffer, context->state);
 
-			/* And prepare the last transform: */
-			usedspace = 0;
-		}
-		/* Set-up for the last transform: */
-		memzero(((uint8_t*)context->buffer) + usedspace, SHA1_SHORT_BLOCK_LENGTH - usedspace);
+            /* And prepare the last transform: */
+            usedspace = 0;
+        }
+        /* Set-up for the last transform: */
+        std::memset(context->buffer + usedspace, 0, SHA1_BLOCK_LENGTH - usedspace);
 
 #if BYTE_ORDER == LITTLE_ENDIAN
 		/* Convert TO host byte order */
@@ -621,31 +622,32 @@ void sha1_Final(trezor::SHA1_CTX* context, sha2_byte digest[]) {
 			REVERSE32(context->state[j],context->state[j]);
 		}
 #endif
-		MEMCPY_BCOPY(digest, context->state, SHA1_DIGEST_LENGTH);
-	}
+        MEMCPY_BCOPY(digest, context->state, SHA1_DIGEST_LENGTH);
+    }
 
-	/* Clean up state data: */
-	memzero(context, sizeof(trezor::SHA1_CTX));
+    /* Clean up state data: */
+    std::memset(context, 0, sizeof(trezor::SHA1_CTX));
 }
 
-char *sha1_End(trezor::SHA1_CTX* context, char buffer[]) {
-	sha2_byte	digest[SHA1_DIGEST_LENGTH], *d = digest;
-	int		i;
+char* sha1_End(trezor::SHA1_CTX* context, char buffer[])
+{
+    sha2_byte digest[SHA1_DIGEST_LENGTH], *d = digest;
+    int i;
 
-	if (buffer != (char*)0) {
-		sha1_Final(context, digest);
+    if (buffer != (char*)0) {
+        sha1_Final(context, digest);
 
-		for (i = 0; i < SHA1_DIGEST_LENGTH; i++) {
-			*buffer++ = sha2_hex_digits[(*d & 0xf0) >> 4];
-			*buffer++ = sha2_hex_digits[*d & 0x0f];
-			d++;
-		}
-		*buffer = (char)0;
-	} else {
-		memzero(context, sizeof(trezor::SHA1_CTX));
-	}
-	memzero(digest, SHA1_DIGEST_LENGTH);
-	return buffer;
+        for (i = 0; i < SHA1_DIGEST_LENGTH; i++) {
+            *buffer++ = sha2_hex_digits[(*d & 0xf0) >> 4];
+            *buffer++ = sha2_hex_digits[*d & 0x0f];
+            d++;
+        }
+        *buffer = (char)0;
+    } else {
+        std::memset(context, 0, sizeof(trezor::SHA1_CTX));
+    }
+    std::memset(digest, 0, SHA1_DIGEST_LENGTH);
+    return buffer;
 }
 
 void sha1_Raw(const sha2_byte* data, size_t len, uint8_t digest[SHA1_DIGEST_LENGTH]) {
@@ -669,8 +671,8 @@ void sha256_Init(trezor::SHA256_CTX* context) {
 		return;
 	}
 	MEMCPY_BCOPY(context->state, sha256_initial_hash_value, SHA256_DIGEST_LENGTH);
-	memzero(context->buffer, SHA256_BLOCK_LENGTH);
-	context->bitcount = 0;
+    std::memset(context->buffer, 0, SHA256_BLOCK_LENGTH);
+    context->bitcount = 0;
 }
 
 #ifdef SHA2_UNROLL_TRANSFORM
@@ -821,9 +823,9 @@ void sha256_Transform(const sha2_word32* state_in, const sha2_word32* data, sha2
 #endif /* SHA2_UNROLL_TRANSFORM */
 
 void sha256_Update(trezor::SHA256_CTX* context, const sha2_byte *data, size_t len) {
-	unsigned int	freespace, usedspace;
+    unsigned int freespace, usedspace;
 
-	if (len == 0) {
+    if (len == 0) {
 		/* Calling with no data is valid - we do nothing */
 		return;
 	}
@@ -886,7 +888,7 @@ void sha256_Final(trezor::SHA256_CTX* context, sha2_byte digest[]) {
 		((uint8_t*)context->buffer)[usedspace++] = 0x80;
 		
 		if (usedspace > SHA256_SHORT_BLOCK_LENGTH) {
-			memzero(((uint8_t*)context->buffer) + usedspace, SHA256_BLOCK_LENGTH - usedspace);
+            std::memset(context->buffer + usedspace, 0, SHA256_BLOCK_LENGTH - usedspace);
 
 #if BYTE_ORDER == LITTLE_ENDIAN
 			/* Convert TO host byte order */
@@ -894,14 +896,14 @@ void sha256_Final(trezor::SHA256_CTX* context, sha2_byte digest[]) {
 				REVERSE32(context->buffer[j],context->buffer[j]);
 			}
 #endif
-			/* Do second-to-last transform: */
-			sha256_Transform(context->state, context->buffer, context->state);
-			
-			/* And prepare the last transform: */
-			usedspace = 0;
-		}
-		/* Set-up for the last transform: */
-		memzero(((uint8_t*)context->buffer) + usedspace, SHA256_SHORT_BLOCK_LENGTH - usedspace);
+            /* Do second-to-last transform: */
+            sha256_Transform(context->state, context->buffer, context->state);
+
+            /* And prepare the last transform: */
+            usedspace = 0;
+        }
+        /* Set-up for the last transform: */
+        std::memset(context->buffer + usedspace, 0, SHA256_SHORT_BLOCK_LENGTH - usedspace);
 
 #if BYTE_ORDER == LITTLE_ENDIAN
 		/* Convert TO host byte order */
@@ -926,7 +928,7 @@ void sha256_Final(trezor::SHA256_CTX* context, sha2_byte digest[]) {
 	}
 
 	/* Clean up state data: */
-	memzero(context, sizeof(trezor::SHA256_CTX));
+    std::memset(context, 0, sizeof(trezor::SHA256_CTX));
 }
 
 char *sha256_End(trezor::SHA256_CTX* context, char buffer[]) {
@@ -943,10 +945,10 @@ char *sha256_End(trezor::SHA256_CTX* context, char buffer[]) {
 		}
 		*buffer = (char)0;
 	} else {
-		memzero(context, sizeof(trezor::SHA256_CTX));
-	}
-	memzero(digest, SHA256_DIGEST_LENGTH);
-	return buffer;
+        std::memset(context, 0, sizeof(trezor::SHA256_CTX));
+    }
+    std::memset(digest, 0, SHA256_DIGEST_LENGTH);
+    return buffer;
 }
 
 void sha256_Raw(const sha2_byte* data, size_t len, uint8_t digest[SHA256_DIGEST_LENGTH]) {
@@ -971,8 +973,8 @@ void sha512_Init(trezor::SHA512_CTX* context) {
 		return;
 	}
 	MEMCPY_BCOPY(context->state, sha512_initial_hash_value, SHA512_DIGEST_LENGTH);
-	memzero(context->buffer, SHA512_BLOCK_LENGTH);
-	context->bitcount[0] = context->bitcount[1] =  0;
+    std::memset(context->buffer, 0, SHA512_BLOCK_LENGTH);
+    context->bitcount[0] = context->bitcount[1] = 0;
 }
 
 #ifdef SHA2_UNROLL_TRANSFORM
@@ -1183,7 +1185,7 @@ static void sha512_Last(trezor::SHA512_CTX* context) {
 	((uint8_t*)context->buffer)[usedspace++] = 0x80;
 	
 	if (usedspace > SHA512_SHORT_BLOCK_LENGTH) {
-		memzero(((uint8_t*)context->buffer) + usedspace, SHA512_BLOCK_LENGTH - usedspace);
+        std::memset(context->buffer + usedspace, 0, SHA512_BLOCK_LENGTH - usedspace);
 
 #if BYTE_ORDER == LITTLE_ENDIAN
 		/* Convert TO host byte order */
@@ -1198,7 +1200,7 @@ static void sha512_Last(trezor::SHA512_CTX* context) {
 		usedspace = 0;
 	}
 	/* Set-up for the last transform: */
-	memzero(((uint8_t*)context->buffer) + usedspace, SHA512_SHORT_BLOCK_LENGTH - usedspace);
+    std::memset((uint8_t*)context->buffer + usedspace, 0, SHA512_SHORT_BLOCK_LENGTH - usedspace);
 
 #if BYTE_ORDER == LITTLE_ENDIAN
 	/* Convert TO host byte order */
@@ -1230,7 +1232,7 @@ void sha512_Final(trezor::SHA512_CTX* context, sha2_byte digest[]) {
 	}
 
 	/* Zero out state data */
-	memzero(context, sizeof(trezor::SHA512_CTX));
+    std::memset(context, 0, sizeof(trezor::SHA512_CTX));
 }
 
 char *sha512_End(trezor::SHA512_CTX* context, char buffer[]) {
@@ -1245,12 +1247,12 @@ char *sha512_End(trezor::SHA512_CTX* context, char buffer[]) {
 			*buffer++ = sha2_hex_digits[*d & 0x0f];
 			d++;
 		}
-		*buffer = (char)0;
-	} else {
-		memzero(context, sizeof(trezor::SHA512_CTX));
-	}
-	memzero(digest, SHA512_DIGEST_LENGTH);
-	return buffer;
+        *buffer = (char)0;
+    } else {
+        std::memset(context, 0, sizeof(trezor::SHA512_CTX));
+    }
+    std::memset(digest, 0, sizeof(trezor::SHA512_CTX));
+    return buffer;
 }
 
 void sha512_Raw(const sha2_byte* data, size_t len, uint8_t digest[SHA512_DIGEST_LENGTH]) {
