@@ -142,8 +142,8 @@ int b58check(const uint8_t* bin, size_t binsz, const char* base58str)
     }
 
     //    hasher_Raw(hasher_type, bin, binsz - 4, buf);
-    sha256_Raw(bin, binsz - 4, buf);
-    sha256_Raw(buf, 32, buf);
+    sha256(bin, binsz - 4, buf);
+    sha256(buf, 32, buf);
     if (memcmp(&binc[binsz - 4], buf, 4) > 0)
         return -1;
 
@@ -208,8 +208,8 @@ int base58_encode_check(const uint8_t* data, size_t datalen, char* str, size_t s
     memcpy(&buf[0], data, datalen);
 
     //    hasher_Raw(hasher_type, data, datalen, hash);
-    sha256_Raw(data, datalen, hash);
-    sha256_Raw(hash, 32, hash);
+    sha256(data, datalen, hash);
+    sha256(hash, 32, hash);
     size_t res = strsize;
     bool success = b58enc(str, &res, &buf[0], datalen + 4);
     std::fill(buf.begin(), buf.end(), 0);

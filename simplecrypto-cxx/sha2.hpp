@@ -1,6 +1,7 @@
 /**
  * Copyright (c) 2000-2001 Aaron D. Gifford
  * Copyright (c) 2013-2014 Pavol Rusnak
+ * Copyright (c) 2020 Waqar Ahmed
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,14 +36,14 @@
 #include <string>
 
 static constexpr size_t SHA1_BLOCK_LENGTH = 64;
-static constexpr size_t SHA1_DIGEST_LENGTH = 20;
-static constexpr size_t SHA1_DIGEST_STRING_LENGTH = (SHA1_DIGEST_LENGTH * 2 + 1);
+static constexpr size_t SHA1_RAW_BYTES_LENGTH = 20;
+static constexpr size_t SHA1_HEX_STRING_LENGTH = (SHA1_RAW_BYTES_LENGTH * 2 + 1);
 static constexpr size_t SHA256_BLOCK_LENGTH = 64;
-static constexpr size_t SHA256_DIGEST_LENGTH = 32;
-static constexpr size_t SHA256_DIGEST_STRING_LENGTH = (SHA256_DIGEST_LENGTH * 2 + 1);
+static constexpr size_t SHA256_RAW_BYTES_LENGTH = 32;
+static constexpr size_t SHA256_HEX_STRING_LENGTH = (SHA256_RAW_BYTES_LENGTH * 2 + 1);
 static constexpr size_t SHA512_BLOCK_LENGTH = 128;
-static constexpr size_t SHA512_DIGEST_LENGTH = 64;
-static constexpr size_t SHA512_DIGEST_STRING_LENGTH = (SHA512_DIGEST_LENGTH * 2 + 1);
+static constexpr size_t SHA512_RAW_BYTES_LENGTH = 64;
+static constexpr size_t SHA512_HEX_STRING_LENGTH = (SHA512_RAW_BYTES_LENGTH * 2 + 1);
 
 namespace trezor {
 
@@ -93,25 +94,47 @@ typedef struct _SHA512_CTX {
 void sha1_Transform(const uint32_t* state_in, const uint32_t* data, uint32_t* state_out);
 void sha1_Init(trezor::SHA1_CTX*);
 void sha1_Update(trezor::SHA1_CTX*, const uint8_t*, size_t);
-void sha1_Final(trezor::SHA1_CTX*, uint8_t[SHA1_DIGEST_LENGTH]);
-char* sha1_End(trezor::SHA1_CTX*, char[SHA1_DIGEST_STRING_LENGTH]);
-void sha1_Raw(const uint8_t*, std::size_t, uint8_t[SHA1_DIGEST_LENGTH]);
-char* sha1_Data(const uint8_t*, std::size_t, char[SHA1_DIGEST_STRING_LENGTH]);
+void sha1_Final(trezor::SHA1_CTX*, uint8_t[SHA1_RAW_BYTES_LENGTH]);
+char* sha1_End(trezor::SHA1_CTX*, char[SHA1_HEX_STRING_LENGTH]);
+
+/**
+ * @brief output hash in raw bytes
+ */
+void sha1(const uint8_t*, std::size_t, uint8_t[SHA1_RAW_BYTES_LENGTH]);
+/**
+ * @brief returns hash in hexadecimal
+ */
+char* sha1HexString(const uint8_t*, std::size_t, char[SHA1_HEX_STRING_LENGTH]);
 
 void sha256_Transform(const uint32_t* state_in, const uint32_t* data, uint32_t* state_out);
 void sha256_Init(trezor::SHA256_CTX*);
 void sha256_Update(trezor::SHA256_CTX*, const uint8_t*, size_t);
-void sha256_Final(trezor::SHA256_CTX*, uint8_t[SHA256_DIGEST_LENGTH]);
-char* sha256_End(trezor::SHA256_CTX*, char[SHA256_DIGEST_STRING_LENGTH]);
-void sha256_Raw(const uint8_t*, std::size_t, uint8_t[SHA256_DIGEST_LENGTH]);
-char* sha256_Data(const uint8_t*, std::size_t, char[SHA256_DIGEST_STRING_LENGTH]);
+void sha256_Final(trezor::SHA256_CTX*, uint8_t[SHA256_RAW_BYTES_LENGTH]);
+char* sha256_End(trezor::SHA256_CTX*, char[SHA256_HEX_STRING_LENGTH]);
+
+/**
+ * @brief output hash in raw bytes
+ */
+void sha256(const uint8_t*, std::size_t, uint8_t[SHA256_RAW_BYTES_LENGTH]);
+/**
+ * @brief returns hash in hexadecimal
+ */
+char* sha256HexString(const uint8_t*, std::size_t, char[SHA256_HEX_STRING_LENGTH]);
 
 void sha512_Transform(const uint64_t* state_in, const uint64_t* data, uint64_t* state_out);
 void sha512_Init(trezor::SHA512_CTX*);
 void sha512_Update(trezor::SHA512_CTX*, const uint8_t*, size_t);
-void sha512_Final(trezor::SHA512_CTX*, uint8_t[SHA512_DIGEST_LENGTH]);
-char* sha512_End(trezor::SHA512_CTX*, char[SHA512_DIGEST_STRING_LENGTH]);
-void sha512_Raw(const uint8_t*, size_t, uint8_t[SHA512_DIGEST_LENGTH]);
-char* sha512_Data(const uint8_t*, size_t, char[SHA512_DIGEST_STRING_LENGTH]);
+void sha512_Final(trezor::SHA512_CTX*, uint8_t[SHA512_RAW_BYTES_LENGTH]);
+char* sha512_End(trezor::SHA512_CTX*, char[SHA512_HEX_STRING_LENGTH]);
+
+/**
+ * @brief output hash in raw bytes
+ */
+void sha512(const uint8_t* input, size_t size, uint8_t output[SHA512_RAW_BYTES_LENGTH]);
+
+/**
+ * @brief returns hash in hexadecimal
+ */
+char* sha512HexString(const uint8_t* input, size_t size, char output[SHA512_HEX_STRING_LENGTH]);
 
 #endif

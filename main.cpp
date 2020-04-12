@@ -23,7 +23,7 @@ int main()
     std::vector<uint8_t> out(32);
     //    sha256_Raw(reinterpret_cast<const uint8_t*>(s.c_str()), s.length(), &out[0]);
     std::vector<char> o(32);
-    sha256_Data(reinterpret_cast<const uint8_t*>(s.c_str()), s.length(), &o[0]);
+    sha256HexString(reinterpret_cast<const uint8_t*>(s.c_str()), s.length(), &o[0]);
     //    std::cout << HexStr(out.begin(), out.end());
     std::cout << std::string{o.data()};
     return 0;
