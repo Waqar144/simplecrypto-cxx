@@ -90,9 +90,6 @@ typedef struct _SHA512_CTX {
 }
 #endif /* BYTE_ORDER == LITTLE_ENDIAN */
 
-extern const uint32_t sha256_initial_hash_value[8];
-extern const uint64_t sha512_initial_hash_value[8];
-
 void sha1_Transform(const uint32_t* state_in, const uint32_t* data, uint32_t* state_out);
 void sha1_Init(trezor::SHA1_CTX*);
 void sha1_Update(trezor::SHA1_CTX*, const uint8_t*, size_t);
