@@ -1,7 +1,8 @@
 #include <iostream>
 #include <vector>
 
-#include "simplecrypto-cxx/sha2.hpp"
+//#include "simplecrypto-cxx/sha2.hpp"
+#include "simplecrypto-cxx/sha256.h"
 
 template <typename T> std::string HexStr(const T itbegin, const T itend)
 {
@@ -21,11 +22,11 @@ int main()
 {
     std::string s = "hello";
     std::vector<uint8_t> out(32);
-    //    sha256_Raw(reinterpret_cast<const uint8_t*>(s.c_str()), s.length(), &out[0]);
-    std::vector<char> o(65);
-    sha256HexString(reinterpret_cast<const uint8_t*>(s.c_str()), s.length(), &o[0]);
-    //    std::cout << HexStr(out.begin(), out.end());
-    std::cout << "Output: " << std::string{o.data()} << " \nsiz: " << std::string(o.data()).size()
-              << std::endl;
+    sha256(reinterpret_cast<const uint8_t*>(s.c_str()), s.length(), &out[0]);
+    //    std::vector<char> o(65);
+    //    sha256HexString(reinterpret_cast<const uint8_t*>(s.c_str()), s.length(), &o[0]);
+    std::cout << HexStr(out.begin(), out.end());
+    //    std::cout << "Output: " << std::string{o.data()} << " \nsiz: " << std::string(o.data()).size()
+    //              << std::endl;
     return 0;
 }
