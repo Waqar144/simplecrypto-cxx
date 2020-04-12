@@ -63,7 +63,7 @@ bool b58tobin(uint8_t *bin, size_t *binszp, const char *b58) {
     uint32_t c;
     size_t i, j;
     uint8_t bytesleft = binsz % 4;
-    uint32_t zeromask = bytesleft ? (0xffffffff << (bytesleft * 8u)) : 0u;
+    uint32_t zeromask = bytesleft ? (0xffffffff << (bytesleft * 8U)) : 0U;
     unsigned zerocount = 0;
     size_t b58sz;
 
@@ -141,7 +141,6 @@ int b58check(const uint8_t* bin, size_t binsz, const char* base58str)
         return -4;
     }
 
-    //    hasher_Raw(hasher_type, bin, binsz - 4, buf);
     sha256(bin, binsz - 4, buf);
     sha256(buf, 32, buf);
     if (memcmp(&binc[binsz - 4], buf, 4) > 0)
@@ -166,10 +165,8 @@ bool b58enc(char *outb58, size_t *b58sz, const uint8_t *data, size_t binsz) {
         ++zcount;
 
     size = (binsz - zcount) * 138 / 100 + 1;
-//	uint8_t buf[size];
     std::vector<uint8_t> buf(size);
     std::fill(buf.begin(), buf.end(), 0);
-//	memset(buf, 0, size);
 
     for (i = zcount, high = size - 1; i < (ssize_t) binsz; ++i, high = j) {
         for (carry = bin[i], j = size - 1; (j > high) || carry; --j) {
@@ -196,7 +193,6 @@ bool b58enc(char *outb58, size_t *b58sz, const uint8_t *data, size_t binsz) {
     return true;
 }
 
-#include <array>
 int base58_encode_check(const uint8_t* data, size_t datalen, char* str, size_t strsize)
 {
     if (datalen > 128) {
@@ -207,7 +203,6 @@ int base58_encode_check(const uint8_t* data, size_t datalen, char* str, size_t s
     uint8_t *hash = &buf[0] + datalen;
     memcpy(&buf[0], data, datalen);
 
-    //    hasher_Raw(hasher_type, data, datalen, hash);
     sha256(data, datalen, hash);
     sha256(hash, 32, hash);
     size_t res = strsize;
