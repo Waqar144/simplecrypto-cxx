@@ -31,8 +31,6 @@
 #ifndef __SHA2_H__
 #define __SHA2_H__
 
-//#include "bip3x/bip39_core.h"
-
 #include <cstdint>
 #include <string>
 

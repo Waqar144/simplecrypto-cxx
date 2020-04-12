@@ -24,8 +24,6 @@
 #ifndef __BASE58_H__
 #define __BASE58_H__
 
-//#include "hasher.h"
-//#include "options.h"
 #include <stddef.h>
 #include <stdint.h>
 

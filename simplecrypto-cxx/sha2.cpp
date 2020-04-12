@@ -30,8 +30,6 @@
 
 #include "sha2.hpp"
 
-//#include "memzero.h"
-
 #include <cstdint>
 #include <cstring>
 #include <string>
@@ -586,7 +584,7 @@ void sha1_Final(trezor::SHA1_CTX* context, sha2_byte digest[])
         ((uint8_t*)context->buffer)[usedspace++] = 0x80;
 
         if (usedspace > SHA1_SHORT_BLOCK_LENGTH) {
-            std::memset(context->buffer + usedspace, 0, SHA1_BLOCK_LENGTH - usedspace);
+            std::memset(((uint8_t*)context->buffer) + usedspace, 0, SHA1_BLOCK_LENGTH - usedspace);
 
 #if BYTE_ORDER == LITTLE_ENDIAN
 			/* Convert TO host byte order */
@@ -601,7 +599,7 @@ void sha1_Final(trezor::SHA1_CTX* context, sha2_byte digest[])
             usedspace = 0;
         }
         /* Set-up for the last transform: */
-        std::memset(context->buffer + usedspace, 0, SHA1_BLOCK_LENGTH - usedspace);
+        std::memset(((uint8_t*)context->buffer) + usedspace, 0, SHA1_BLOCK_LENGTH - usedspace);
 
 #if BYTE_ORDER == LITTLE_ENDIAN
 		/* Convert TO host byte order */
@@ -888,7 +886,7 @@ void sha256_Final(trezor::SHA256_CTX* context, sha2_byte digest[]) {
 		((uint8_t*)context->buffer)[usedspace++] = 0x80;
 		
 		if (usedspace > SHA256_SHORT_BLOCK_LENGTH) {
-            std::memset(context->buffer + usedspace, 0, SHA256_BLOCK_LENGTH - usedspace);
+            std::memset(((uint8_t*)context->buffer) + usedspace, 0, SHA256_BLOCK_LENGTH - usedspace);
 
 #if BYTE_ORDER == LITTLE_ENDIAN
 			/* Convert TO host byte order */
@@ -903,7 +901,8 @@ void sha256_Final(trezor::SHA256_CTX* context, sha2_byte digest[]) {
             usedspace = 0;
         }
         /* Set-up for the last transform: */
-        std::memset(context->buffer + usedspace, 0, SHA256_SHORT_BLOCK_LENGTH - usedspace);
+        std::memset(
+            ((uint8_t*)context->buffer) + usedspace, 0, SHA256_SHORT_BLOCK_LENGTH - usedspace);
 
 #if BYTE_ORDER == LITTLE_ENDIAN
 		/* Convert TO host byte order */
@@ -1185,7 +1184,7 @@ static void sha512_Last(trezor::SHA512_CTX* context) {
 	((uint8_t*)context->buffer)[usedspace++] = 0x80;
 	
 	if (usedspace > SHA512_SHORT_BLOCK_LENGTH) {
-        std::memset(context->buffer + usedspace, 0, SHA512_BLOCK_LENGTH - usedspace);
+        std::memset(((uint8_t*)context->buffer) + usedspace, 0, SHA512_BLOCK_LENGTH - usedspace);
 
 #if BYTE_ORDER == LITTLE_ENDIAN
 		/* Convert TO host byte order */
@@ -1200,7 +1199,7 @@ static void sha512_Last(trezor::SHA512_CTX* context) {
 		usedspace = 0;
 	}
 	/* Set-up for the last transform: */
-    std::memset((uint8_t*)context->buffer + usedspace, 0, SHA512_SHORT_BLOCK_LENGTH - usedspace);
+    std::memset(((uint8_t*)context->buffer) + usedspace, 0, SHA512_SHORT_BLOCK_LENGTH - usedspace);
 
 #if BYTE_ORDER == LITTLE_ENDIAN
 	/* Convert TO host byte order */
