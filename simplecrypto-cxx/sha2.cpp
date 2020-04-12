@@ -63,7 +63,7 @@
  * Please make sure that your system defines BYTE_ORDER.  If your
  * architecture is little-endian, make sure it also defines
  * LITTLE_ENDIAN and that the two (BYTE_ORDER and LITTLE_ENDIAN) are
- * equivilent.
+ * equivalent.
  *
  * If your system does not define the above, then you can do so by
  * hand like this:
@@ -73,7 +73,7 @@
  *
  * And for little-endian machines, add:
  *
- *   #define BYTE_ORDER LITTLE_ENDIAN 
+ *   #define BYTE_ORDER LITTLE_ENDIAN
  *
  * Or for big-endian machines:
  *
@@ -253,7 +253,6 @@ static constexpr std::array<char, 17> sha2_hex_digits = {"0123456789abcdef"};
 void sha1_Init(trezor::SHA1_CTX* context)
 {
     std::memcpy(context->state, sha1_initial_hash_value.begin(), SHA1_DIGEST_LENGTH);
-    std::copy(sha1_initial_hash_value.begin(), sha1_initial_hash_value.end(), context->state);
     std::memset(context->buffer, 0, SHA1_BLOCK_LENGTH);
     context->bitcount = 0;
 }
@@ -601,12 +600,11 @@ void sha1_Final(trezor::SHA1_CTX* context, sha2_byte digest[])
 char* sha1_End(trezor::SHA1_CTX* context, char buffer[])
 {
     sha2_byte digest[SHA1_DIGEST_LENGTH], *d = digest;
-    int i;
 
     if (buffer != (char*)0) {
         sha1_Final(context, digest);
 
-        for (i = 0; i < SHA1_DIGEST_LENGTH; i++) {
+        for (size_t i = 0; i < SHA1_DIGEST_LENGTH; i++) {
             *buffer++ = sha2_hex_digits[(*d & 0xf0) >> 4];
             *buffer++ = sha2_hex_digits[*d & 0x0f];
             d++;
@@ -902,20 +900,20 @@ void sha256_Final(trezor::SHA256_CTX* context, sha2_byte digest[]) {
     std::memset(context, 0, sizeof(trezor::SHA256_CTX));
 }
 
-char *sha256_End(trezor::SHA256_CTX* context, char buffer[]) {
-	sha2_byte	digest[SHA256_DIGEST_LENGTH], *d = digest;
-	int		i;
+char* sha256_End(trezor::SHA256_CTX* context, char buffer[])
+{
+    sha2_byte digest[SHA256_DIGEST_LENGTH], *d = digest;
 
-	if (buffer != (char*)0) {
-		sha256_Final(context, digest);
+    if (buffer != (char*)0) {
+        sha256_Final(context, digest);
 
-		for (i = 0; i < SHA256_DIGEST_LENGTH; i++) {
-			*buffer++ = sha2_hex_digits[(*d & 0xf0) >> 4];
-			*buffer++ = sha2_hex_digits[*d & 0x0f];
-			d++;
-		}
-		*buffer = (char)0;
-	} else {
+        for (size_t i = 0; i < SHA256_DIGEST_LENGTH; i++) {
+            *buffer++ = sha2_hex_digits[(*d & 0xf0) >> 4];
+            *buffer++ = sha2_hex_digits[*d & 0x0f];
+            d++;
+        }
+        *buffer = (char)0;
+    } else {
         std::memset(context, 0, sizeof(trezor::SHA256_CTX));
     }
     std::memset(digest, 0, SHA256_DIGEST_LENGTH);
@@ -1137,9 +1135,9 @@ void sha512_Update(trezor::SHA512_CTX* context, const sha2_byte *data, size_t le
 			REVERSE64(context->buffer[j],context->buffer[j]);
 		}
 #endif
-		sha512_Transform(context->state, context->buffer, context->state);
-		ADDINC128(context->bitcount, SHA512_BLOCK_LENGTH << 3);
-		len -= SHA512_BLOCK_LENGTH;
+        sha512_Transform(context->state, context->buffer, context->state);
+        ADDINC128(context->bitcount, SHA512_BLOCK_LENGTH << 3);
+        len -= SHA512_BLOCK_LENGTH;
         data += SHA512_BLOCK_LENGTH;
     }
     if (len > 0) {
@@ -1208,17 +1206,16 @@ void sha512_Final(trezor::SHA512_CTX* context, sha2_byte digest[]) {
 }
 
 char *sha512_End(trezor::SHA512_CTX* context, char buffer[]) {
-	sha2_byte	digest[SHA512_DIGEST_LENGTH], *d = digest;
-	int		i;
+    sha2_byte digest[SHA512_DIGEST_LENGTH], *d = digest;
 
-	if (buffer != (char*)0) {
-		sha512_Final(context, digest);
+    if (buffer != (char*)0) {
+        sha512_Final(context, digest);
 
-		for (i = 0; i < SHA512_DIGEST_LENGTH; i++) {
-			*buffer++ = sha2_hex_digits[(*d & 0xf0) >> 4];
-			*buffer++ = sha2_hex_digits[*d & 0x0f];
-			d++;
-		}
+        for (size_t i = 0; i < SHA512_DIGEST_LENGTH; i++) {
+            *buffer++ = sha2_hex_digits[(*d & 0xf0) >> 4];
+            *buffer++ = sha2_hex_digits[*d & 0x0f];
+            d++;
+        }
         *buffer = (char)0;
     } else {
         std::memset(context, 0, sizeof(trezor::SHA512_CTX));
