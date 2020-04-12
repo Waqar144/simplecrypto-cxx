@@ -30,6 +30,7 @@
 
 #include "sha2.hpp"
 
+#include <array>
 #include <cstdint>
 #include <cstring>
 #include <string>
@@ -110,8 +111,6 @@ typedef uint64_t sha2_word64;	/* Exactly 8 bytes */
 	} \
 }
 
-#define MEMCPY_BCOPY(d,s,l)	memcpy((d), (s), (l))
-
 /*** THE SIX LOGICAL FUNCTIONS ****************************************/
 /*
  * Bit shifting and rotation (used by the six SHA-XYZ logical functions:
@@ -171,38 +170,33 @@ static void sha512_Last(trezor::SHA512_CTX*);
 /*** SHA-XYZ INITIAL HASH VALUES AND CONSTANTS ************************/
 
 /* Hash constant words K for SHA-1: */
-#define K1_0_TO_19	0x5a827999UL
-#define K1_20_TO_39	0x6ed9eba1UL
-#define K1_40_TO_59	0x8f1bbcdcUL
-#define K1_60_TO_79	0xca62c1d6UL
+static constexpr uint64_t K1_0_TO_19 = 0x5a827999UL;
+static constexpr uint64_t K1_20_TO_39 = 0x6ed9eba1UL;
+static constexpr uint64_t K1_40_TO_59 = 0x8f1bbcdcUL;
+static constexpr uint64_t K1_60_TO_79 = 0xca62c1d6UL;
 
 /* Initial hash value H for SHA-1: */
-const sha2_word32 sha1_initial_hash_value[SHA1_DIGEST_LENGTH / sizeof(sha2_word32)] = {
-	0x67452301UL,
-	0xefcdab89UL,
-	0x98badcfeUL,
-	0x10325476UL,
-	0xc3d2e1f0UL
+static constexpr std::array<sha2_word32, 5> sha1_initial_hash_value = {
+    0x67452301UL,
+    0xefcdab89UL,
+    0x98badcfeUL,
+    0x10325476UL,
+    0xc3d2e1f0UL,
 };
 
 /* Hash constant words K for SHA-256: */
-static const sha2_word32 K256[64] = {
-	0x428a2f98UL, 0x71374491UL, 0xb5c0fbcfUL, 0xe9b5dba5UL,
-	0x3956c25bUL, 0x59f111f1UL, 0x923f82a4UL, 0xab1c5ed5UL,
-	0xd807aa98UL, 0x12835b01UL, 0x243185beUL, 0x550c7dc3UL,
-	0x72be5d74UL, 0x80deb1feUL, 0x9bdc06a7UL, 0xc19bf174UL,
-	0xe49b69c1UL, 0xefbe4786UL, 0x0fc19dc6UL, 0x240ca1ccUL,
-	0x2de92c6fUL, 0x4a7484aaUL, 0x5cb0a9dcUL, 0x76f988daUL,
-	0x983e5152UL, 0xa831c66dUL, 0xb00327c8UL, 0xbf597fc7UL,
-	0xc6e00bf3UL, 0xd5a79147UL, 0x06ca6351UL, 0x14292967UL,
-	0x27b70a85UL, 0x2e1b2138UL, 0x4d2c6dfcUL, 0x53380d13UL,
-	0x650a7354UL, 0x766a0abbUL, 0x81c2c92eUL, 0x92722c85UL,
-	0xa2bfe8a1UL, 0xa81a664bUL, 0xc24b8b70UL, 0xc76c51a3UL,
-	0xd192e819UL, 0xd6990624UL, 0xf40e3585UL, 0x106aa070UL,
-	0x19a4c116UL, 0x1e376c08UL, 0x2748774cUL, 0x34b0bcb5UL,
-	0x391c0cb3UL, 0x4ed8aa4aUL, 0x5b9cca4fUL, 0x682e6ff3UL,
-	0x748f82eeUL, 0x78a5636fUL, 0x84c87814UL, 0x8cc70208UL,
-	0x90befffaUL, 0xa4506cebUL, 0xbef9a3f7UL, 0xc67178f2UL
+static constexpr std::array<sha2_word32, 64> K256 = {
+    0x428a2f98UL, 0x71374491UL, 0xb5c0fbcfUL, 0xe9b5dba5UL, 0x3956c25bUL, 0x59f111f1UL,
+    0x923f82a4UL, 0xab1c5ed5UL, 0xd807aa98UL, 0x12835b01UL, 0x243185beUL, 0x550c7dc3UL,
+    0x72be5d74UL, 0x80deb1feUL, 0x9bdc06a7UL, 0xc19bf174UL, 0xe49b69c1UL, 0xefbe4786UL,
+    0x0fc19dc6UL, 0x240ca1ccUL, 0x2de92c6fUL, 0x4a7484aaUL, 0x5cb0a9dcUL, 0x76f988daUL,
+    0x983e5152UL, 0xa831c66dUL, 0xb00327c8UL, 0xbf597fc7UL, 0xc6e00bf3UL, 0xd5a79147UL,
+    0x06ca6351UL, 0x14292967UL, 0x27b70a85UL, 0x2e1b2138UL, 0x4d2c6dfcUL, 0x53380d13UL,
+    0x650a7354UL, 0x766a0abbUL, 0x81c2c92eUL, 0x92722c85UL, 0xa2bfe8a1UL, 0xa81a664bUL,
+    0xc24b8b70UL, 0xc76c51a3UL, 0xd192e819UL, 0xd6990624UL, 0xf40e3585UL, 0x106aa070UL,
+    0x19a4c116UL, 0x1e376c08UL, 0x2748774cUL, 0x34b0bcb5UL, 0x391c0cb3UL, 0x4ed8aa4aUL,
+    0x5b9cca4fUL, 0x682e6ff3UL, 0x748f82eeUL, 0x78a5636fUL, 0x84c87814UL, 0x8cc70208UL,
+    0x90befffaUL, 0xa4506cebUL, 0xbef9a3f7UL, 0xc67178f2UL,
 };
 
 /* Initial hash value H for SHA-256: */
@@ -281,8 +275,10 @@ static const char *sha2_hex_digits = "0123456789abcdef";
 
 
 /*** SHA-1: ***********************************************************/
-void sha1_Init(trezor::SHA1_CTX* context) {
-	MEMCPY_BCOPY(context->state, sha1_initial_hash_value, SHA1_DIGEST_LENGTH);
+void sha1_Init(trezor::SHA1_CTX* context)
+{
+    std::memcpy(context->state, sha1_initial_hash_value.begin(), SHA1_DIGEST_LENGTH);
+    std::copy(sha1_initial_hash_value.begin(), sha1_initial_hash_value.end(), context->state);
     std::memset(context->buffer, 0, SHA1_BLOCK_LENGTH);
     context->bitcount = 0;
 }
@@ -532,10 +528,10 @@ void sha1_Update(trezor::SHA1_CTX* context, const sha2_byte *data, size_t len) {
 
 		if (len >= freespace) {
 			/* Fill the buffer completely and process it */
-			MEMCPY_BCOPY(((uint8_t*)context->buffer) + usedspace, data, freespace);
-			context->bitcount += freespace << 3;
-			len -= freespace;
-			data += freespace;
+            std::memcpy(((uint8_t*)context->buffer) + usedspace, data, freespace);
+            context->bitcount += freespace << 3;
+            len -= freespace;
+            data += freespace;
 #if BYTE_ORDER == LITTLE_ENDIAN
 			/* Convert TO host byte order */
 			for (int j = 0; j < 16; j++) {
@@ -545,32 +541,32 @@ void sha1_Update(trezor::SHA1_CTX* context, const sha2_byte *data, size_t len) {
 			sha1_Transform(context->state, context->buffer, context->state);
 		} else {
 			/* The buffer is not yet full */
-			MEMCPY_BCOPY(((uint8_t*)context->buffer) + usedspace, data, len);
-			context->bitcount += len << 3;
-			/* Clean up: */
-			usedspace = freespace = 0;
-			return;
-		}
-	}
-	while (len >= SHA1_BLOCK_LENGTH) {
-		/* Process as many complete blocks as we can */
-		MEMCPY_BCOPY(context->buffer, data, SHA1_BLOCK_LENGTH);
+            std::memcpy(((uint8_t*)context->buffer) + usedspace, data, len);
+            context->bitcount += len << 3;
+            /* Clean up: */
+            usedspace = freespace = 0;
+            return;
+        }
+    }
+    while (len >= SHA1_BLOCK_LENGTH) {
+        /* Process as many complete blocks as we can */
+        std::memcpy(context->buffer, data, SHA1_BLOCK_LENGTH);
 #if BYTE_ORDER == LITTLE_ENDIAN
 		/* Convert TO host byte order */
 		for (int j = 0; j < 16; j++) {
 			REVERSE32(context->buffer[j],context->buffer[j]);
 		}
 #endif
-		sha1_Transform(context->state, context->buffer, context->state);
-		context->bitcount += SHA1_BLOCK_LENGTH << 3;
-		len -= SHA1_BLOCK_LENGTH;
-		data += SHA1_BLOCK_LENGTH;
-	}
-	if (len > 0) {
-		/* There's left-overs, so save 'em */
-		MEMCPY_BCOPY(context->buffer, data, len);
-		context->bitcount += len << 3;
-	}
+        sha1_Transform(context->state, context->buffer, context->state);
+        context->bitcount += SHA1_BLOCK_LENGTH << 3;
+        len -= SHA1_BLOCK_LENGTH;
+        data += SHA1_BLOCK_LENGTH;
+    }
+    if (len > 0) {
+        /* There's left-overs, so save 'em */
+        std::memcpy(context->buffer, data, len);
+        context->bitcount += len << 3;
+    }
 }
 
 void sha1_Final(trezor::SHA1_CTX* context, sha2_byte digest[])
@@ -620,7 +616,7 @@ void sha1_Final(trezor::SHA1_CTX* context, sha2_byte digest[])
 			REVERSE32(context->state[j],context->state[j]);
 		}
 #endif
-        MEMCPY_BCOPY(digest, context->state, SHA1_DIGEST_LENGTH);
+        std::memcpy(digest, context->state, SHA1_DIGEST_LENGTH);
     }
 
     /* Clean up state data: */
@@ -664,11 +660,12 @@ char* sha1_Data(const sha2_byte* data, size_t len, char digest[SHA1_DIGEST_STRIN
 }
 
 /*** SHA-256: *********************************************************/
-void sha256_Init(trezor::SHA256_CTX* context) {
-	if (context == (trezor::SHA256_CTX*)0) {
-		return;
-	}
-	MEMCPY_BCOPY(context->state, sha256_initial_hash_value, SHA256_DIGEST_LENGTH);
+void sha256_Init(trezor::SHA256_CTX* context)
+{
+    if (context == (trezor::SHA256_CTX*)0) {
+        return;
+    }
+    std::memcpy(context->state, sha256_initial_hash_value, SHA256_DIGEST_LENGTH);
     std::memset(context->buffer, 0, SHA256_BLOCK_LENGTH);
     context->bitcount = 0;
 }
@@ -835,10 +832,10 @@ void sha256_Update(trezor::SHA256_CTX* context, const sha2_byte *data, size_t le
 
 		if (len >= freespace) {
 			/* Fill the buffer completely and process it */
-			MEMCPY_BCOPY(((uint8_t*)context->buffer) + usedspace, data, freespace);
-			context->bitcount += freespace << 3;
-			len -= freespace;
-			data += freespace;
+            std::memcpy(((uint8_t*)context->buffer) + usedspace, data, freespace);
+            context->bitcount += freespace << 3;
+            len -= freespace;
+            data += freespace;
 #if BYTE_ORDER == LITTLE_ENDIAN
 			/* Convert TO host byte order */
 			for (int j = 0; j < 16; j++) {
@@ -848,16 +845,16 @@ void sha256_Update(trezor::SHA256_CTX* context, const sha2_byte *data, size_t le
 			sha256_Transform(context->state, context->buffer, context->state);
 		} else {
 			/* The buffer is not yet full */
-			MEMCPY_BCOPY(((uint8_t*)context->buffer) + usedspace, data, len);
-			context->bitcount += len << 3;
-			/* Clean up: */
-			usedspace = freespace = 0;
-			return;
-		}
-	}
-	while (len >= SHA256_BLOCK_LENGTH) {
-		/* Process as many complete blocks as we can */
-		MEMCPY_BCOPY(context->buffer, data, SHA256_BLOCK_LENGTH);
+            std::memcpy(((uint8_t*)context->buffer) + usedspace, data, len);
+            context->bitcount += len << 3;
+            /* Clean up: */
+            usedspace = freespace = 0;
+            return;
+        }
+    }
+    while (len >= SHA256_BLOCK_LENGTH) {
+        /* Process as many complete blocks as we can */
+        std::memcpy(context->buffer, data, SHA256_BLOCK_LENGTH);
 #if BYTE_ORDER == LITTLE_ENDIAN
 		/* Convert TO host byte order */
 		for (int j = 0; j < 16; j++) {
@@ -867,13 +864,13 @@ void sha256_Update(trezor::SHA256_CTX* context, const sha2_byte *data, size_t le
 		sha256_Transform(context->state, context->buffer, context->state);
 		context->bitcount += SHA256_BLOCK_LENGTH << 3;
 		len -= SHA256_BLOCK_LENGTH;
-		data += SHA256_BLOCK_LENGTH;
-	}
-	if (len > 0) {
-		/* There's left-overs, so save 'em */
-		MEMCPY_BCOPY(context->buffer, data, len);
-		context->bitcount += len << 3;
-	}
+        data += SHA256_BLOCK_LENGTH;
+    }
+    if (len > 0) {
+        /* There's left-overs, so save 'em */
+        std::memcpy(context->buffer, data, len);
+        context->bitcount += len << 3;
+    }
 }
 
 void sha256_Final(trezor::SHA256_CTX* context, sha2_byte digest[]) {
@@ -923,10 +920,10 @@ void sha256_Final(trezor::SHA256_CTX* context, sha2_byte digest[]) {
 			REVERSE32(context->state[j],context->state[j]);
 		}
 #endif
-		MEMCPY_BCOPY(digest, context->state, SHA256_DIGEST_LENGTH);
-	}
+        std::memcpy(digest, context->state, SHA256_DIGEST_LENGTH);
+    }
 
-	/* Clean up state data: */
+    /* Clean up state data: */
     std::memset(context, 0, sizeof(trezor::SHA256_CTX));
 }
 
@@ -967,11 +964,12 @@ char* sha256_Data(const sha2_byte* data, size_t len, char digest[SHA256_DIGEST_S
 
 
 /*** SHA-512: *********************************************************/
-void sha512_Init(trezor::SHA512_CTX* context) {
-	if (context == (trezor::SHA512_CTX*)0) {
-		return;
-	}
-	MEMCPY_BCOPY(context->state, sha512_initial_hash_value, SHA512_DIGEST_LENGTH);
+void sha512_Init(trezor::SHA512_CTX* context)
+{
+    if (context == (trezor::SHA512_CTX*)0) {
+        return;
+    }
+    std::memcpy(context->state, sha512_initial_hash_value, SHA512_DIGEST_LENGTH);
     std::memset(context->buffer, 0, SHA512_BLOCK_LENGTH);
     context->bitcount[0] = context->bitcount[1] = 0;
 }
@@ -1135,10 +1133,10 @@ void sha512_Update(trezor::SHA512_CTX* context, const sha2_byte *data, size_t le
 
 		if (len >= freespace) {
 			/* Fill the buffer completely and process it */
-			MEMCPY_BCOPY(((uint8_t*)context->buffer) + usedspace, data, freespace);
-			ADDINC128(context->bitcount, freespace << 3);
-			len -= freespace;
-			data += freespace;
+            std::memcpy(((uint8_t*)context->buffer) + usedspace, data, freespace);
+            ADDINC128(context->bitcount, freespace << 3);
+            len -= freespace;
+            data += freespace;
 #if BYTE_ORDER == LITTLE_ENDIAN
 			/* Convert TO host byte order */
 			for (int j = 0; j < 16; j++) {
@@ -1148,16 +1146,16 @@ void sha512_Update(trezor::SHA512_CTX* context, const sha2_byte *data, size_t le
 			sha512_Transform(context->state, context->buffer, context->state);
 		} else {
 			/* The buffer is not yet full */
-			MEMCPY_BCOPY(((uint8_t*)context->buffer) + usedspace, data, len);
-			ADDINC128(context->bitcount, len << 3);
-			/* Clean up: */
-			usedspace = freespace = 0;
+            std::memcpy(((uint8_t*)context->buffer) + usedspace, data, len);
+            ADDINC128(context->bitcount, len << 3);
+            /* Clean up: */
+            usedspace = freespace = 0;
 			return;
 		}
 	}
 	while (len >= SHA512_BLOCK_LENGTH) {
 		/* Process as many complete blocks as we can */
-		MEMCPY_BCOPY(context->buffer, data, SHA512_BLOCK_LENGTH);
+        std::memcpy(context->buffer, data, SHA512_BLOCK_LENGTH);
 #if BYTE_ORDER == LITTLE_ENDIAN
 		/* Convert TO host byte order */
 		for (int j = 0; j < 16; j++) {
@@ -1171,9 +1169,9 @@ void sha512_Update(trezor::SHA512_CTX* context, const sha2_byte *data, size_t le
 	}
 	if (len > 0) {
 		/* There's left-overs, so save 'em */
-		MEMCPY_BCOPY(context->buffer, data, len);
-		ADDINC128(context->bitcount, len << 3);
-	}
+        std::memcpy(context->buffer, data, len);
+        ADDINC128(context->bitcount, len << 3);
+    }
 }
 
 static void sha512_Last(trezor::SHA512_CTX* context) {
@@ -1227,10 +1225,10 @@ void sha512_Final(trezor::SHA512_CTX* context, sha2_byte digest[]) {
 			REVERSE64(context->state[j],context->state[j]);
 		}
 #endif
-		MEMCPY_BCOPY(digest, context->state, SHA512_DIGEST_LENGTH);
-	}
+        std::memcpy(digest, context->state, SHA512_DIGEST_LENGTH);
+    }
 
-	/* Zero out state data */
+    /* Zero out state data */
     std::memset(context, 0, sizeof(trezor::SHA512_CTX));
 }
 
