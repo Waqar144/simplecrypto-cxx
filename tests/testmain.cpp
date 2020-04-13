@@ -1,4 +1,5 @@
 #include "sha256.h"
+#include "sha512.h"
 #include <gtest/gtest.h>
 
 template <typename T> std::string HexStr(const T itbegin, const T itend)
@@ -15,7 +16,7 @@ template <typename T> std::string HexStr(const T itbegin, const T itend)
     return rv;
 }
 
-TEST(sha256, sha256Test)
+TEST(simplecrypto_cxx, sha256Test)
 {
     std::string s = "hello";
     std::string s1 = "019283109238ksla;jdxcv0z98cv012;lkk;asdjfkjxcv08091823091283kljvl;kxcj";
@@ -37,6 +38,42 @@ TEST(sha256, sha256Test)
     sha256(reinterpret_cast<const uint8_t*>(s3.c_str()), s3.length(), &out[0]);
     expected = HexStr(out.begin(), out.end());
     EXPECT_EQ(expected, "8d93a9972afbd63f943826fa6b1ec0e04e9526c7a168abeda69af63fa7abee18");
+}
+
+TEST(simplecrypto_cxx, sha512Test)
+{
+    std::string s = "hello";
+    std::string s1 = "019283109238ksla;jdxcv0z98cv012;lkk;asdjfkjxcv08091823091283kljvl;kxcj";
+    std::string s2 = "--123-0909-0123*(*";
+    std::string s3 = "@#)*()(*)!(@*0";
+    std::vector<uint8_t> out(SHA512_DIGEST_LENGTH);
+    sha512(reinterpret_cast<const uint8_t*>(s.c_str()), s.length(), &out[0]);
+    std::string expected = HexStr(out.begin(), out.end());
+    EXPECT_EQ(
+        expected,
+        "9b71d224bd62f3785d96d46ad3ea3d73319bfbc2890caadae2dff72519673ca72323c3d99ba5c11d7c7acc6e14"
+        "b8c5da0c4663475c2e5c3adef46f73bcdec043");
+
+    sha512(reinterpret_cast<const uint8_t*>(s1.c_str()), s1.length(), &out[0]);
+    expected = HexStr(out.begin(), out.end());
+    EXPECT_EQ(
+        expected,
+        "177bed39a0ba132a1fa3e52a2aa0a4d6a61905022021410634dda19a4ffeb2f78f568ffb3b4d7c3a9c7a9a5247"
+        "122cc298dce7020a1395076e7086c3f743e959");
+
+    sha512(reinterpret_cast<const uint8_t*>(s2.c_str()), s2.length(), &out[0]);
+    expected = HexStr(out.begin(), out.end());
+    EXPECT_EQ(
+        expected,
+        "b6d8768a328241e61d1019c9f053561b948c0ba23dff963341fef9b25870c82dcba80227f7bf5a1e25c9dc0918"
+        "4f57209f1f58151f4db8897327a1a615e2244a");
+
+    sha512(reinterpret_cast<const uint8_t*>(s3.c_str()), s3.length(), &out[0]);
+    expected = HexStr(out.begin(), out.end());
+    EXPECT_EQ(
+        expected,
+        "a2cace2cec84583f3b8b3642e6ca308c6c33938d11e210bb7be8d4a543509b15030be609ffc7f0cbf3a6999c9d"
+        "207e343ccf2b6c903f47966fe5aaa44f443e4f");
 }
 
 
