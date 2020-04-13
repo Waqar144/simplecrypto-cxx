@@ -46,7 +46,7 @@ TEST(simplecrypto_cxx, sha512Test)
     std::string s1 = "019283109238ksla;jdxcv0z98cv012;lkk;asdjfkjxcv08091823091283kljvl;kxcj";
     std::string s2 = "--123-0909-0123*(*";
     std::string s3 = "@#)*()(*)!(@*0";
-    std::vector<uint8_t> out(SHA512_DIGEST_LENGTH);
+    std::vector<uint8_t> out(SHA512_RAW_BYTES_LENGTH);
     sha512(reinterpret_cast<const uint8_t*>(s.c_str()), s.length(), &out[0]);
     std::string expected = HexStr(out.begin(), out.end());
     EXPECT_EQ(

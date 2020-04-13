@@ -57,14 +57,6 @@ static const uint64_t K512[80] = {
 };
 
 #if BYTE_ORDER == LITTLE_ENDIAN
-//#    define REVERSE64(w, x)                                                                        \
-//        {                                                                                          \
-//            uint64_t tmp = (w);                                                                    \
-//            tmp = (tmp >> 32) | (tmp << 32);                                                       \
-//            tmp = ((tmp & 0xff00ff00ff00ff00ULL) >> 8) | ((tmp & 0x00ff00ff00ff00ffULL) << 8);     \
-//            (x) = ((tmp & 0xffff0000ffff0000ULL) >> 16) | ((tmp & 0x0000ffff0000ffffULL) << 16);   \
-//        }
-
 static constexpr uint64_t inline reverse64(uint64_t w)
 {
     uint64_t tmp = w;
@@ -76,17 +68,10 @@ static constexpr uint64_t inline reverse64(uint64_t w)
 #endif /* BYTE_ORDER == LITTLE_ENDIAN */
 
 /*
- * Macro for incrementally adding the unsigned 64-bit integer n to the
+ * Function for incrementally adding the unsigned 64-bit integer n to the
  * unsigned 128-bit integer (represented using a two-element array of
  * 64-bit words):
  */
-//#define ADDINC128(w, n)                                                                            \
-//    {                                                                                              \
-//        (w)[0] += (sha2_word64)(n);                                                                \
-//        if ((w)[0] < (n)) {                                                                        \
-//            (w)[1]++;                                                                              \
-//        }                                                                                          \
-//    }
 static constexpr inline uint64_t* addInc128(uint64_t t_128[2], uint64_t n)
 {
     t_128[0] += n;
@@ -300,14 +285,14 @@ void sha512_Final(SHA512_CTX* context, uint8_t digest[])
             context->state[j] = reverse64(context->state[j]);
         }
 #endif
-        std::memcpy(digest, context->state, SHA512_DIGEST_LENGTH);
+        std::memcpy(digest, context->state, SHA512_RAW_BYTES_LENGTH);
     }
 
     /* Zero out state data */
     std::memset(context, 0, sizeof(SHA512_CTX));
 }
 
-void sha512(const uint8_t* data, size_t len, uint8_t digest[SHA512_DIGEST_LENGTH])
+void sha512(const uint8_t* data, size_t len, uint8_t digest[SHA512_RAW_BYTES_LENGTH])
 {
     SHA512_CTX context;
     sha512_Init(&context);

@@ -22,7 +22,7 @@ template <typename T> std::string HexStr(const T itbegin, const T itend)
 int main()
 {
     std::string s = "hello";
-    std::vector<uint8_t> out(SHA512_DIGEST_LENGTH);
+    std::vector<uint8_t> out(SHA512_RAW_BYTES_LENGTH);
     sha512(reinterpret_cast<const uint8_t*>(s.c_str()), s.length(), &out[0]);
     //    std::vector<char> o(65);
     //    sha256HexString(reinterpret_cast<const uint8_t*>(s.c_str()), s.length(), &o[0]);

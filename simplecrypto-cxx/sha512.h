@@ -35,8 +35,8 @@
 #include <cstdint>
 
 static constexpr size_t SHA512_BLOCK_LENGTH = 128;
-static constexpr size_t SHA512_DIGEST_LENGTH = 64;
-static constexpr size_t SHA512_DIGEST_STRING_LENGTH = SHA512_DIGEST_LENGTH * 2 + 1;
+static constexpr size_t SHA512_RAW_BYTES_LENGTH = 64;
+static constexpr size_t SHA512_DIGEST_STRING_LENGTH = SHA512_RAW_BYTES_LENGTH * 2 + 1;
 
 struct SHA512_CTX {
     uint64_t state[8];
@@ -46,14 +46,14 @@ struct SHA512_CTX {
 
 void sha512_Init(SHA512_CTX* context);
 void sha512_Update(SHA512_CTX* context, const uint8_t*, size_t);
-void sha512_Final(SHA512_CTX* context, uint8_t out[SHA512_DIGEST_LENGTH]);
+void sha512_Final(SHA512_CTX* context, uint8_t out[SHA512_RAW_BYTES_LENGTH]);
 
 /**
- * @brief takes `data` as input and outputs `digest` as hash
+ * @brief takes `data` as input and outputs `out` as hash in raw bytes
  * @param data
  * @param len
  * @param digest
  */
-void sha512(const uint8_t* in, size_t inSize, uint8_t out[SHA512_DIGEST_LENGTH]);
+void sha512(const uint8_t* in, size_t inSize, uint8_t out[SHA512_RAW_BYTES_LENGTH]);
 
 #endif    // SHA512_H
