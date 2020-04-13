@@ -29,7 +29,7 @@ typedef signed long ssize_t;
 
 //#include "memzero.h"
 #include "ripemd160.h"
-#include "sha2.hpp"
+#include "sha256.h"
 
 #include <algorithm>
 #include <array>

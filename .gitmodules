@@ -1,0 +1,3 @@
+[submodule "simplecrypto-cxx/benchmark"]
+	path = simplecrypto-cxx/benchmark
+	url = https://github.com/google/benchmark.git
