@@ -9,10 +9,8 @@ static constexpr size_t SHA256_RAW_BYTES_LENGTH = 32;
 static constexpr size_t SHA256_HEX_STRING_LENGTH = (SHA256_RAW_BYTES_LENGTH * 2 + 1);
 
 struct SHA256_CTX {
-    //    std::array<uint32_t, SHA256_BLOCK_LENGTH / sizeof(uint32_t)> buffer = {0};
-    //    std::array<uint32_t, 8> state;
-    uint32_t buffer[SHA256_BLOCK_LENGTH / sizeof(uint32_t)];
-    uint32_t state[8];
+    std::array<uint32_t, SHA256_BLOCK_LENGTH / sizeof(uint32_t)> buffer = {0};
+    std::array<uint32_t, 8> state;
     uint64_t bitcount = 0;
 };
 
