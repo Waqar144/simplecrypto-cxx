@@ -55,7 +55,6 @@ void sha256_Init(SHA256_CTX* context)
 void sha256_Transform(const uint32_t* state_in, const uint32_t* data, uint32_t* state_out)
 {
     uint32_t a, b, c, d, e, f, g, h, s0, s1;
-    uint32_t T1, T2, W256[16];
 
     /* Initialize registers with the prev. intermediate value */
     a = state_in[0];
@@ -67,10 +66,13 @@ void sha256_Transform(const uint32_t* state_in, const uint32_t* data, uint32_t* 
     g = state_in[6];
     h = state_in[7];
 
+    uint32_t T1, T2;
+    std::array<uint32_t, 16> W256;
+    std::copy(data, data + 16, W256.begin());
     int j = 0;
     do {
         /* Apply the SHA-256 compression function to update a..h with copy */
-        T1 = h + Sigma1(e) + Ch(e, f, g) + K256[j] + (W256[j] = *data++);
+        T1 = h + Sigma1(e) + Ch(e, f, g) + K256.at(j) + W256.at(j);
         T2 = Sigma0(a) + Maj(a, b, c);
         h = g;
         g = f;
@@ -81,19 +83,19 @@ void sha256_Transform(const uint32_t* state_in, const uint32_t* data, uint32_t* 
         b = a;
         a = T1 + T2;
 
-        j++;
+        ++j;
     } while (j < 16);
 
     do {
         /* Part of the message block expansion: */
-        s0 = W256[(j + 1) & 0x0f];
+        s0 = W256.at((j + 1) & 0x0f);
         s0 = sigma0(s0);
-        s1 = W256[(j + 14) & 0x0f];
+        s1 = W256.at((j + 14) & 0x0f);
         s1 = sigma1(s1);
 
         /* Apply the SHA-256 compression function to update a..h */
-        T1 = h + Sigma1(e) + Ch(e, f, g) + K256[j] +
-            (W256[j & 0x0f] += s1 + W256[(j + 9) & 0x0f] + s0);
+        T1 = h + Sigma1(e) + Ch(e, f, g) + K256.at(j) +
+            (W256.at(j & 0x0f) += s1 + W256.at((j + 9) & 0x0f) + s0);
         T2 = Sigma0(a) + Maj(a, b, c);
         h = g;
         g = f;
@@ -104,7 +106,7 @@ void sha256_Transform(const uint32_t* state_in, const uint32_t* data, uint32_t* 
         b = a;
         a = T1 + T2;
 
-        j++;
+        ++j;
     } while (j < 64);
 
     /* Compute the current intermediate hash value */
@@ -141,7 +143,7 @@ void sha256_Update(SHA256_CTX* context, const uint8_t* data, size_t len)
             data += freespace;
 #if BYTE_ORDER == LITTLE_ENDIAN
             /* Convert TO host byte order */
-            for (int j = 0; j < 16; j++) {
+            for (int j = 0; j < 16; ++j) {
                 context->buffer[j] = Reverse32(context->buffer[j]);
             }
 #endif
@@ -160,7 +162,7 @@ void sha256_Update(SHA256_CTX* context, const uint8_t* data, size_t len)
         std::memcpy(context->buffer.begin(), data, SHA256_BLOCK_LENGTH);
 #if BYTE_ORDER == LITTLE_ENDIAN
         /* Convert TO host byte order */
-        for (int j = 0; j < 16; j++) {
+        for (int j = 0; j < 16; ++j) {
             context->buffer[j] = Reverse32(context->buffer[j]);
         }
 #endif
@@ -194,7 +196,7 @@ void sha256_Final(SHA256_CTX* context, uint8_t digest[])
 
 #if BYTE_ORDER == LITTLE_ENDIAN
             /* Convert TO host byte order */
-            for (int j = 0; j < 16; j++) {
+            for (int j = 0; j < 16; ++j) {
                 context->buffer[j] = Reverse32(context->buffer[j]);
             }
 #endif
@@ -212,7 +214,7 @@ void sha256_Final(SHA256_CTX* context, uint8_t digest[])
 
 #if BYTE_ORDER == LITTLE_ENDIAN
         /* Convert TO host byte order */
-        for (int j = 0; j < 14; j++) {
+        for (int j = 0; j < 14; ++j) {
             context->buffer[j] = Reverse32(context->buffer[j]);
         }
 #endif
@@ -225,7 +227,7 @@ void sha256_Final(SHA256_CTX* context, uint8_t digest[])
 
 #if BYTE_ORDER == LITTLE_ENDIAN
         /* Convert FROM host byte order */
-        for (int j = 0; j < 8; j++) {
+        for (int j = 0; j < 8; ++j) {
             context->state[j] = Reverse32(context->state[j]);
         }
 #endif
