@@ -15,7 +15,7 @@ template <typename T> std::string HexStr(const T itbegin, const T itend)
     return rv;
 }
 
-TEST(sha256Test, sha256)
+TEST(sha256, sha256Test)
 {
     std::string s = "hello";
     std::string s1 = "019283109238ksla;jdxcv0z98cv012;lkk;asdjfkjxcv08091823091283kljvl;kxcj";
