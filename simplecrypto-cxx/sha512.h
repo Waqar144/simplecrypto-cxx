@@ -52,7 +52,7 @@ void sha512_Final(SHA512_CTX* context, uint8_t out[SHA512_RAW_BYTES_LENGTH]);
  * @brief takes `data` as input and outputs `out` as hash in raw bytes
  * @param data
  * @param len
- * @param digest
+ * @param out
  */
 void sha512(const uint8_t* in, size_t inSize, uint8_t out[SHA512_RAW_BYTES_LENGTH]);
 
