@@ -186,7 +186,8 @@ void sha512_Update(SHA512_CTX* context, const uint8_t* data, size_t len)
 
         if (len >= freespace) {
             /* Fill the buffer completely and process it */
-            std::memcpy(((uint8_t*)context->buffer.begin()) + usedspace, data, freespace);
+            std::memcpy(
+                reinterpret_cast<uint8_t*>(context->buffer.begin()) + usedspace, data, freespace);
             addInc128(context->bitcount.begin(), freespace << 3);
             len -= freespace;
             data += freespace;
@@ -199,7 +200,7 @@ void sha512_Update(SHA512_CTX* context, const uint8_t* data, size_t len)
             sha512_Transform(context->state.begin(), context->buffer.begin(), context->state.begin());
         } else {
             /* The buffer is not yet full */
-            std::memcpy(((uint8_t*)context->buffer.begin()) + usedspace, data, len);
+            std::memcpy(reinterpret_cast<uint8_t*>(context->buffer.begin()) + usedspace, data, len);
             addInc128(context->bitcount.begin(), len << 3);
             /* Clean up: */
             usedspace = freespace = 0;
@@ -237,7 +238,9 @@ static void sha512_Last(SHA512_CTX* context)
 
     if (usedspace > SHA512_SHORT_BLOCK_LENGTH) {
         std::memset(
-            ((uint8_t*)context->buffer.begin()) + usedspace, 0, SHA512_BLOCK_LENGTH - usedspace);
+            reinterpret_cast<uint8_t*>(context->buffer.begin()) + usedspace,
+            0,
+            SHA512_BLOCK_LENGTH - usedspace);
 
 #if BYTE_ORDER == LITTLE_ENDIAN
         /* Convert TO host byte order */
@@ -253,7 +256,9 @@ static void sha512_Last(SHA512_CTX* context)
     }
     /* Set-up for the last transform: */
     std::memset(
-        ((uint8_t*)context->buffer.begin()) + usedspace, 0, SHA512_SHORT_BLOCK_LENGTH - usedspace);
+        reinterpret_cast<uint8_t*>(context->buffer.begin()) + usedspace,
+        0,
+        SHA512_SHORT_BLOCK_LENGTH - usedspace);
 
 #if BYTE_ORDER == LITTLE_ENDIAN
     /* Convert TO host byte order */
