@@ -39,9 +39,9 @@ static constexpr size_t SHA512_RAW_BYTES_LENGTH = 64;
 static constexpr size_t SHA512_DIGEST_STRING_LENGTH = SHA512_RAW_BYTES_LENGTH * 2 + 1;
 
 struct SHA512_CTX {
-    uint64_t state[8];
-    uint64_t bitcount[2];
-    uint64_t buffer[SHA512_BLOCK_LENGTH / sizeof(uint64_t)];
+    std::array<uint64_t, 8> state = {0};
+    std::array<uint64_t, 2> bitcount = {0};
+    std::array<uint64_t, SHA512_BLOCK_LENGTH / sizeof(uint64_t)> buffer = {0};
 };
 
 void sha512_Init(SHA512_CTX* context);

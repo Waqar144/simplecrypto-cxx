@@ -33,7 +33,7 @@
 
 static constexpr size_t SHA512_SHORT_BLOCK_LENGTH = SHA512_BLOCK_LENGTH - 16;
 
-static const uint64_t K512[80] = {
+static constexpr std::array<uint64_t, 80> K512 = {
     0x428a2f98d728ae22ULL, 0x7137449123ef65cdULL, 0xb5c0fbcfec4d3b2fULL, 0xe9b5dba58189dbbcULL,
     0x3956c25bf348b538ULL, 0x59f111f1b605d019ULL, 0x923f82a4af194f9bULL, 0xab1c5ed5da6d8118ULL,
     0xd807aa98a3030242ULL, 0x12835b0145706fbeULL, 0x243185be4ee4b28cULL, 0x550c7dc3d5ffb4e2ULL,
@@ -59,11 +59,10 @@ static const uint64_t K512[80] = {
 #if BYTE_ORDER == LITTLE_ENDIAN
 static constexpr uint64_t inline reverse64(uint64_t w)
 {
-    uint64_t tmp = w;
-    tmp = (tmp >> 32) | (tmp << 32);
-    tmp = ((tmp & 0xff00ff00ff00ff00ULL) >> 8) | ((tmp & 0x00ff00ff00ff00ffULL) << 8);
-    tmp = ((tmp & 0xffff0000ffff0000ULL) >> 16) | ((tmp & 0x0000ffff0000ffffULL) << 16);
-    return tmp;
+    w = (w >> 32) | (w << 32);
+    w = ((w & 0xff00ff00ff00ff00ULL) >> 8) | ((w & 0x00ff00ff00ff00ffULL) << 8);
+    w = ((w & 0xffff0000ffff0000ULL) >> 16) | ((w & 0x0000ffff0000ffffULL) << 16);
+    return w;
 }
 #endif /* BYTE_ORDER == LITTLE_ENDIAN */
 
@@ -72,13 +71,12 @@ static constexpr uint64_t inline reverse64(uint64_t w)
  * unsigned 128-bit integer (represented using a two-element array of
  * 64-bit words):
  */
-static constexpr inline uint64_t* addInc128(uint64_t t_128[2], uint64_t n)
+static constexpr inline void addInc128(uint64_t t_128[2], uint64_t n)
 {
     t_128[0] += n;
     if (t_128[0] < n) {
         ++t_128[1];
     }
-    return t_128;
 }
 
 // clang-format off
@@ -103,9 +101,6 @@ void sha512_Init(SHA512_CTX* context)
     context->state[5] = 0x9b05688c2b3e6c1fULL;
     context->state[6] = 0x1f83d9abfb41bd6bULL;
     context->state[7] = 0x5be0cd19137e2179ULL;
-
-    std::memset(context->buffer, 0, SHA512_BLOCK_LENGTH);
-    context->bitcount[0] = context->bitcount[1] = 0;
 }
 
 void sha512_Transform(const uint64_t* state_in, const uint64_t* data, uint64_t* state_out)
@@ -191,8 +186,8 @@ void sha512_Update(SHA512_CTX* context, const uint8_t* data, size_t len)
 
         if (len >= freespace) {
             /* Fill the buffer completely and process it */
-            std::memcpy(((uint8_t*)context->buffer) + usedspace, data, freespace);
-            addInc128(context->bitcount, freespace << 3);
+            std::memcpy(((uint8_t*)context->buffer.begin()) + usedspace, data, freespace);
+            addInc128(context->bitcount.begin(), freespace << 3);
             len -= freespace;
             data += freespace;
 #if BYTE_ORDER == LITTLE_ENDIAN
@@ -201,11 +196,11 @@ void sha512_Update(SHA512_CTX* context, const uint8_t* data, size_t len)
                 context->buffer[j] = reverse64(context->buffer[j]);
             }
 #endif
-            sha512_Transform(context->state, context->buffer, context->state);
+            sha512_Transform(context->state.begin(), context->buffer.begin(), context->state.begin());
         } else {
             /* The buffer is not yet full */
-            std::memcpy(((uint8_t*)context->buffer) + usedspace, data, len);
-            addInc128(context->bitcount, len << 3);
+            std::memcpy(((uint8_t*)context->buffer.begin()) + usedspace, data, len);
+            addInc128(context->bitcount.begin(), len << 3);
             /* Clean up: */
             usedspace = freespace = 0;
             return;
@@ -213,22 +208,22 @@ void sha512_Update(SHA512_CTX* context, const uint8_t* data, size_t len)
     }
     while (len >= SHA512_BLOCK_LENGTH) {
         /* Process as many complete blocks as we can */
-        std::memcpy(context->buffer, data, SHA512_BLOCK_LENGTH);
+        std::memcpy(context->buffer.begin(), data, SHA512_BLOCK_LENGTH);
 #if BYTE_ORDER == LITTLE_ENDIAN
         /* Convert TO host byte order */
         for (int j = 0; j < 16; j++) {
             context->buffer[j] = reverse64(context->buffer[j]);
         }
 #endif
-        sha512_Transform(context->state, context->buffer, context->state);
-        addInc128(context->bitcount, SHA512_BLOCK_LENGTH << 3);
+        sha512_Transform(context->state.begin(), context->buffer.begin(), context->state.begin());
+        addInc128(context->bitcount.begin(), SHA512_BLOCK_LENGTH << 3);
         len -= SHA512_BLOCK_LENGTH;
         data += SHA512_BLOCK_LENGTH;
     }
     if (len > 0) {
         /* There's left-overs, so save 'em */
-        std::memcpy(context->buffer, data, len);
-        addInc128(context->bitcount, len << 3);
+        std::memcpy(context->buffer.begin(), data, len);
+        addInc128(context->bitcount.begin(), len << 3);
     }
 }
 
@@ -238,10 +233,11 @@ static void sha512_Last(SHA512_CTX* context)
 
     usedspace = (context->bitcount[0] >> 3) % SHA512_BLOCK_LENGTH;
     /* Begin padding with a 1 bit: */
-    ((uint8_t*)context->buffer)[usedspace++] = 0x80;
+    ((uint8_t*)context->buffer.begin())[usedspace++] = 0x80;
 
     if (usedspace > SHA512_SHORT_BLOCK_LENGTH) {
-        std::memset(((uint8_t*)context->buffer) + usedspace, 0, SHA512_BLOCK_LENGTH - usedspace);
+        std::memset(
+            ((uint8_t*)context->buffer.begin()) + usedspace, 0, SHA512_BLOCK_LENGTH - usedspace);
 
 #if BYTE_ORDER == LITTLE_ENDIAN
         /* Convert TO host byte order */
@@ -250,13 +246,14 @@ static void sha512_Last(SHA512_CTX* context)
         }
 #endif
         /* Do second-to-last transform: */
-        sha512_Transform(context->state, context->buffer, context->state);
+        sha512_Transform(context->state.begin(), context->buffer.begin(), context->state.begin());
 
         /* And prepare the last transform: */
         usedspace = 0;
     }
     /* Set-up for the last transform: */
-    std::memset(((uint8_t*)context->buffer) + usedspace, 0, SHA512_SHORT_BLOCK_LENGTH - usedspace);
+    std::memset(
+        ((uint8_t*)context->buffer.begin()) + usedspace, 0, SHA512_SHORT_BLOCK_LENGTH - usedspace);
 
 #if BYTE_ORDER == LITTLE_ENDIAN
     /* Convert TO host byte order */
@@ -269,7 +266,7 @@ static void sha512_Last(SHA512_CTX* context)
     context->buffer[15] = context->bitcount[0];
 
     /* Final transform: */
-    sha512_Transform(context->state, context->buffer, context->state);
+    sha512_Transform(context->state.begin(), context->buffer.begin(), context->state.begin());
 }
 
 void sha512_Final(SHA512_CTX* context, uint8_t digest[])
@@ -285,7 +282,7 @@ void sha512_Final(SHA512_CTX* context, uint8_t digest[])
             context->state[j] = reverse64(context->state[j]);
         }
 #endif
-        std::memcpy(digest, context->state, SHA512_RAW_BYTES_LENGTH);
+        std::memcpy(digest, context->state.begin(), SHA512_RAW_BYTES_LENGTH);
     }
 
     /* Zero out state data */
