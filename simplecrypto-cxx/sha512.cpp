@@ -234,7 +234,7 @@ static void sha512_Last(SHA512_CTX* context)
 
     usedspace = (context->bitcount[0] >> 3) % SHA512_BLOCK_LENGTH;
     /* Begin padding with a 1 bit: */
-    ((uint8_t*)context->buffer.begin())[usedspace++] = 0x80;
+    reinterpret_cast<uint8_t*>(context->buffer.data())[usedspace++] = 0x80;
 
     if (usedspace > SHA512_SHORT_BLOCK_LENGTH) {
         std::memset(
