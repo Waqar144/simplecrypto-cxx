@@ -105,21 +105,19 @@ void sha512_Init(SHA512_CTX* context)
 
 void sha512_Transform(const uint64_t* state_in, const uint64_t* data, uint64_t* state_out)
 {
-    uint64_t a, b, c, d, e, f, g, h, s0, s1;
-    uint64_t T1, T2, W512[16];
-    int j;
+    uint64_t T1{}, T2{}, W512[16] = {0};
 
     /* Initialize registers with the prev. intermediate value */
-    a = state_in[0];
-    b = state_in[1];
-    c = state_in[2];
-    d = state_in[3];
-    e = state_in[4];
-    f = state_in[5];
-    g = state_in[6];
-    h = state_in[7];
+    uint64_t a = state_in[0];
+    uint64_t b = state_in[1];
+    uint64_t c = state_in[2];
+    uint64_t d = state_in[3];
+    uint64_t e = state_in[4];
+    uint64_t f = state_in[5];
+    uint64_t g = state_in[6];
+    uint64_t h = state_in[7];
 
-    j = 0;
+    int j = 0;
     do {
         /* Apply the SHA-512 compression function to update a..h with copy */
         T1 = h + Sigma1(e) + Ch(e, f, g) + K512[j] + (W512[j] = *data++);
@@ -138,9 +136,9 @@ void sha512_Transform(const uint64_t* state_in, const uint64_t* data, uint64_t* 
 
     do {
         /* Part of the message block expansion: */
-        s0 = W512[(j + 1) & 0x0f];
+        uint64_t s0 = W512[(j + 1) & 0x0f];
         s0 = sigma0(s0);
-        s1 = W512[(j + 14) & 0x0f];
+        uint64_t s1 = W512[(j + 14) & 0x0f];
         s1 = sigma1(s1);
 
         /* Apply the SHA-512 compression function to update a..h */
@@ -172,14 +170,14 @@ void sha512_Transform(const uint64_t* state_in, const uint64_t* data, uint64_t* 
 
 void sha512_Update(SHA512_CTX* context, const uint8_t* data, size_t len)
 {
-    unsigned int freespace, usedspace;
+    unsigned int freespace{};
 
     if (len == 0) {
         /* Calling with no data is valid - we do nothing */
         return;
     }
 
-    usedspace = (context->bitcount[0] >> 3) % SHA512_BLOCK_LENGTH;
+    uint32_t usedspace = (context->bitcount[0] >> 3) % SHA512_BLOCK_LENGTH;
     if (usedspace > 0) {
         /* Calculate how much free space is available in the buffer */
         freespace = SHA512_BLOCK_LENGTH - usedspace;
@@ -230,7 +228,7 @@ void sha512_Update(SHA512_CTX* context, const uint8_t* data, size_t len)
 
 static void sha512_Last(SHA512_CTX* context)
 {
-    unsigned int usedspace;
+    unsigned int usedspace{};
 
     usedspace = (context->bitcount[0] >> 3) % SHA512_BLOCK_LENGTH;
     /* Begin padding with a 1 bit: */
