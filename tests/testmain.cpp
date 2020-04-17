@@ -41,8 +41,13 @@ TEST(simplecrypto_cxx, sha256Test)
     expected = HexStr(out.begin(), out.end());
     EXPECT_EQ(expected, "8d93a9972afbd63f943826fa6b1ec0e04e9526c7a168abeda69af63fa7abee18");
 
-    std::vector<uint8_t> output;
-    sha256(s, output);
+    /** template test using string and vector as inputs */
+
+    auto output = sha256(s);
+    expected = HexStr(output.begin(), output.end());
+    EXPECT_EQ(expected, "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824");
+
+    output = sha256(std::vector<uint8_t>(s.begin(), s.end()));
     expected = HexStr(output.begin(), output.end());
     EXPECT_EQ(expected, "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824");
 }
@@ -82,8 +87,16 @@ TEST(simplecrypto_cxx, sha512Test)
         "a2cace2cec84583f3b8b3642e6ca308c6c33938d11e210bb7be8d4a543509b15030be609ffc7f0cbf3a6999c9d"
         "207e343ccf2b6c903f47966fe5aaa44f443e4f");
 
-    std::vector<uint8_t> output;
-    sha512(s, output);
+    /** template test using string and vector as inputs */
+
+    auto output = sha512(s);
+    expected = HexStr(output.begin(), output.end());
+    EXPECT_EQ(
+        expected,
+        "9b71d224bd62f3785d96d46ad3ea3d73319bfbc2890caadae2dff72519673ca72323c3d99ba5c11d7c7acc6e14"
+        "b8c5da0c4663475c2e5c3adef46f73bcdec043");
+
+    output = sha512(std::vector<uint8_t>(s.begin(), s.end()));
     expected = HexStr(output.begin(), output.end());
     EXPECT_EQ(
         expected,

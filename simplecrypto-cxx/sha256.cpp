@@ -271,3 +271,11 @@ void sha256(const uint8_t* data, size_t len, uint8_t digest[SHA256_RAW_BYTES_LEN
     sha256_Update(&context, data, len);
     sha256_Final(&context, digest);
 }
+
+template <>
+std::vector<uint8_t> sha256<std::string>(const std::string& data)
+{
+    std::vector<uint8_t> output(SHA256_RAW_BYTES_LENGTH);
+    sha256(reinterpret_cast<const uint8_t*>(data.c_str()), data.size(), &output[0]);
+    return output;
+}

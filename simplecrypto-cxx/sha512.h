@@ -33,6 +33,7 @@
 
 #include <array>
 #include <cstdint>
+#include <vector>
 
 static constexpr size_t SHA512_BLOCK_LENGTH = 128;
 static constexpr size_t SHA512_RAW_BYTES_LENGTH = 64;
@@ -62,23 +63,25 @@ void sha512(const uint8_t* in, size_t inSize, uint8_t out[SHA512_RAW_BYTES_LENGT
  * @param data
  * @param output
  */
-template <typename Out>
-void sha512(const std::string& data, Out& output)
+template <typename In>
+std::vector<uint8_t> sha512(const In& data)
 {
-    if (output.size() != SHA512_RAW_BYTES_LENGTH) {
-        output.resize(SHA512_RAW_BYTES_LENGTH);
-    }
+    std::vector<uint8_t> output(SHA512_RAW_BYTES_LENGTH);
 
+    using Type = typename std::decay<decltype(*data.begin())>::type;
+    static_assert(std::is_same<Type, uint8_t>::value, "Container should have uint8_t value type");
 
-#if __cplusplus == 201103L
-    using Type = typename std::decay<decltype(*output.begin())>::type;
-#else
-    using Type = typename Out::value_type;
-#endif
-    static_assert(
-        std::is_same<Type, uint8_t>::value == true, "Output container should be of uint8_t");
+    sha512(data.data(), data.size(), &output[0]);
 
-    return sha512(reinterpret_cast<const uint8_t*>(data.c_str()), data.size(), &output[0]);
+    return output;
 }
+
+/**
+ * @brief takes `data` as input and outputs `output` as hash in raw bytes
+ * @param data
+ * @param output
+ */
+template <>
+std::vector<uint8_t> sha512<std::string>(const std::string& data);
 
 #endif    // SHA512_H

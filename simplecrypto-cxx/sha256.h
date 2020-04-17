@@ -33,6 +33,7 @@
 
 #include <array>
 #include <cstdint>
+#include <vector>
 
 static constexpr size_t SHA256_BLOCK_LENGTH = 64;
 static constexpr size_t SHA256_RAW_BYTES_LENGTH = 32;
@@ -56,29 +57,30 @@ void sha256_Final(SHA256_CTX* context, uint8_t digest[]);
  */
 void sha256(const uint8_t* data, size_t len, uint8_t digest[SHA256_RAW_BYTES_LENGTH]);
 
+/**
+ * @brief takes `data` as input and outputs `output` as hash in raw bytes
+ * @param data
+ * @param output
+ */
+template <typename In>
+std::vector<uint8_t> sha256(const In& data)
+{
+    std::vector<uint8_t> output(SHA256_RAW_BYTES_LENGTH);
+
+    using Type = typename std::decay<decltype(*data.begin())>::type;
+    static_assert(std::is_same<Type, uint8_t>::value, "Container should have uint8_t value type");
+
+    sha256(data.data(), data.size(), &output[0]);
+
+    return output;
+}
 
 /**
  * @brief takes `data` as input and outputs `output` as hash in raw bytes
  * @param data
  * @param output
  */
-template <typename Out>
-void sha256(const std::string& data, Out& output)
-{
-    if (output.size() != SHA256_RAW_BYTES_LENGTH) {
-        output.resize(SHA256_RAW_BYTES_LENGTH);
-    }
-
-
-#if __cplusplus == 201103L
-    using Type = typename std::decay<decltype(*output.begin())>::type;
-#else
-    using Type = typename Out::value_type;
-#endif
-    static_assert(
-        std::is_same<Type, uint8_t>::value == true, "Output container should be of uint8_t");
-
-    return sha256(reinterpret_cast<const uint8_t*>(data.c_str()), data.size(), &output[0]);
-}
+template <>
+std::vector<uint8_t> sha256<std::string>(const std::string& data);
 
 #endif // SHA256_H

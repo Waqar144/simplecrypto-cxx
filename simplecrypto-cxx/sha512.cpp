@@ -302,3 +302,11 @@ void sha512(const uint8_t* data, size_t len, uint8_t digest[SHA512_RAW_BYTES_LEN
     sha512_Update(&context, data, len);
     sha512_Final(&context, digest);
 }
+
+template <>
+std::vector<uint8_t> sha512<std::string>(const std::string& data)
+{
+    std::vector<uint8_t> output(SHA512_RAW_BYTES_LENGTH);
+    sha512(reinterpret_cast<const uint8_t*>(data.c_str()), data.size(), &output[0]);
+    return output;
+}
