@@ -6,7 +6,7 @@ The code is not all mine, most of it is C code written by other people. I am try
 
 ## Currently available:
 - SHA 256
-- SHA 512 (ready, but the code still needs to be modernized)
+- SHA 512
 - base 58
 - RIPEMD 169 (ready, basically c code)
 
@@ -17,6 +17,11 @@ mkdir build && cd build
 cmake .. && make
 ```
 
-# LICENSE
+## LICENSE
 
 MIT
+
+## Credits
+
+Most of the code comes from trezor-crypto libraries.
+TODO: update this part
