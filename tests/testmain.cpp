@@ -1,5 +1,7 @@
+#include "ripemd160.h"
 #include "sha256.h"
 #include "sha512.h"
+
 #include <gtest/gtest.h>
 
 template <typename T> std::string HexStr(const T itbegin, const T itend)
@@ -74,6 +76,30 @@ TEST(simplecrypto_cxx, sha512Test)
         expected,
         "a2cace2cec84583f3b8b3642e6ca308c6c33938d11e210bb7be8d4a543509b15030be609ffc7f0cbf3a6999c9d"
         "207e343ccf2b6c903f47966fe5aaa44f443e4f");
+}
+
+TEST(simplecrypto_cxx, ripemd160Test)
+{
+    std::string s = "hello";
+    std::string s1 = "019283109238ksla;jdxcv0z98cv012;lkk;asdjfkjxcv08091823091283kljvl;kxcj";
+    std::string s2 = "--123-0909-0123*(*";
+    std::string s3 = "@#)*()(*)!(@*0";
+    std::vector<uint8_t> out(RIPEMD160_DIGEST_LENGTH);
+    ripemd160(reinterpret_cast<const uint8_t*>(s.c_str()), s.length(), &out[0]);
+    std::string expected = HexStr(out.begin(), out.end());
+    EXPECT_EQ(expected, "108f07b8382412612c048d07d13f814118445acd");
+
+    ripemd160(reinterpret_cast<const uint8_t*>(s1.c_str()), s1.length(), &out[0]);
+    expected = HexStr(out.begin(), out.end());
+    EXPECT_EQ(expected, "402e30059b6f307ce40a61e9115af9f8b788014f");
+
+    ripemd160(reinterpret_cast<const uint8_t*>(s2.c_str()), s2.length(), &out[0]);
+    expected = HexStr(out.begin(), out.end());
+    EXPECT_EQ(expected, "a94acb6dc6685b0d48a8b7761cc766a6dd7f6247");
+
+    ripemd160(reinterpret_cast<const uint8_t*>(s3.c_str()), s3.length(), &out[0]);
+    expected = HexStr(out.begin(), out.end());
+    EXPECT_EQ(expected, "901b4e3a8601b2465039e78fae054b88333f30ff");
 }
 
 
