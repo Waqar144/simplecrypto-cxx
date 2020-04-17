@@ -84,21 +84,21 @@ void sha256_Init(SHA256_CTX* context)
 
 void sha256_Transform(const uint32_t* state_in, const uint32_t* data, uint32_t* state_out)
 {
-    uint32_t a, b, c, d, e, f, g, h, s0, s1;
-
     /* Initialize registers with the prev. intermediate value */
-    a = state_in[0];
-    b = state_in[1];
-    c = state_in[2];
-    d = state_in[3];
-    e = state_in[4];
-    f = state_in[5];
-    g = state_in[6];
-    h = state_in[7];
+    uint32_t a = state_in[0];
+    uint32_t b = state_in[1];
+    uint32_t c = state_in[2];
+    uint32_t d = state_in[3];
+    uint32_t e = state_in[4];
+    uint32_t f = state_in[5];
+    uint32_t g = state_in[6];
+    uint32_t h = state_in[7];
 
-    uint32_t T1, T2;
+    uint32_t T1{}, T2{};
+
     std::array<uint32_t, 16> W256;
     std::copy(data, data + 16, W256.begin());
+
     int j = 0;
     do {
         /* Apply the SHA-256 compression function to update a..h with copy */
@@ -118,9 +118,9 @@ void sha256_Transform(const uint32_t* state_in, const uint32_t* data, uint32_t* 
 
     do {
         /* Part of the message block expansion: */
-        s0 = W256.at((j + 1) & 0x0f);
+        uint32_t s0 = W256.at((j + 1) & 0x0f);
         s0 = sigma0(s0);
-        s1 = W256.at((j + 14) & 0x0f);
+        uint32_t s1 = W256.at((j + 14) & 0x0f);
         s1 = sigma1(s1);
 
         /* Apply the SHA-256 compression function to update a..h */
@@ -152,17 +152,15 @@ void sha256_Transform(const uint32_t* state_in, const uint32_t* data, uint32_t* 
 
 void sha256_Update(SHA256_CTX* context, const uint8_t* data, size_t len)
 {
-    unsigned int freespace, usedspace;
-
     if (len == 0) {
         /* Calling with no data is valid - we do nothing */
         return;
     }
 
-    usedspace = (context->bitcount >> 3) % SHA256_BLOCK_LENGTH;
+    unsigned int usedspace = (context->bitcount >> 3) % SHA256_BLOCK_LENGTH;
     if (usedspace > 0) {
         /* Calculate how much free space is available in the buffer */
-        freespace = SHA256_BLOCK_LENGTH - usedspace;
+        unsigned int freespace = SHA256_BLOCK_LENGTH - usedspace;
 
         if (len >= freespace) {
             /* Fill the buffer completely and process it */
@@ -210,11 +208,9 @@ void sha256_Update(SHA256_CTX* context, const uint8_t* data, size_t len)
 
 void sha256_Final(SHA256_CTX* context, uint8_t digest[])
 {
-    unsigned int usedspace;
-
     /* If no digest buffer is passed, we don't bother doing this: */
     if (digest != nullptr) {
-        usedspace = (context->bitcount >> 3) % SHA256_BLOCK_LENGTH;
+        unsigned int usedspace = (context->bitcount >> 3) % SHA256_BLOCK_LENGTH;
         /* Begin padding with a 1 bit: */
         reinterpret_cast<uint8_t*>(context->buffer.data())[usedspace++] = 0x80;
 
