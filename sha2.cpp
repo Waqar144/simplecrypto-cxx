@@ -30,8 +30,6 @@
 
 #include "sha2.hpp"
 
-#include "memzero.h"
-
 #include <cstdint>
 #include <cstring>
 #include <string>

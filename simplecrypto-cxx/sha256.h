@@ -56,4 +56,29 @@ void sha256_Final(SHA256_CTX* context, uint8_t digest[]);
  */
 void sha256(const uint8_t* data, size_t len, uint8_t digest[SHA256_RAW_BYTES_LENGTH]);
 
+
+/**
+ * @brief takes `data` as input and outputs `output` as hash in raw bytes
+ * @param data
+ * @param output
+ */
+template <typename Out>
+void sha256(const std::string& data, Out& output)
+{
+    if (output.size() != SHA256_RAW_BYTES_LENGTH) {
+        output.resize(SHA256_RAW_BYTES_LENGTH);
+    }
+
+
+#if __cplusplus == 201103L
+    using Type = typename std::decay<decltype(*output.begin())>::type;
+#else
+    using Type = typename Out::value_type;
+#endif
+    static_assert(
+        std::is_same<Type, uint8_t>::value == true, "Output container should be of uint8_t");
+
+    return sha256(reinterpret_cast<const uint8_t*>(data.c_str()), data.size(), &output[0]);
+}
+
 #endif // SHA256_H

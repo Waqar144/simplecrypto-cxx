@@ -40,6 +40,11 @@ TEST(simplecrypto_cxx, sha256Test)
     sha256(reinterpret_cast<const uint8_t*>(s3.c_str()), s3.length(), &out[0]);
     expected = HexStr(out.begin(), out.end());
     EXPECT_EQ(expected, "8d93a9972afbd63f943826fa6b1ec0e04e9526c7a168abeda69af63fa7abee18");
+
+    std::vector<uint8_t> output;
+    sha256(s, output);
+    expected = HexStr(output.begin(), output.end());
+    EXPECT_EQ(expected, "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824");
 }
 
 TEST(simplecrypto_cxx, sha512Test)
