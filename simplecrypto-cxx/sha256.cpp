@@ -167,7 +167,7 @@ void sha256_Update(SHA256_CTX* context, const uint8_t* data, size_t len)
         if (len >= freespace) {
             /* Fill the buffer completely and process it */
             std::memcpy(
-                reinterpret_cast<uint8_t*>(context->buffer.begin()) + usedspace, data, freespace);
+                reinterpret_cast<uint8_t*>(context->buffer.data()) + usedspace, data, freespace);
             context->bitcount += freespace << 3;
             len -= freespace;
             data += freespace;
@@ -177,10 +177,10 @@ void sha256_Update(SHA256_CTX* context, const uint8_t* data, size_t len)
                 context->buffer[j] = Reverse32(context->buffer[j]);
             }
 #endif
-            sha256_Transform(context->state.begin(), context->buffer.begin(), context->state.begin());
+            sha256_Transform(context->state.data(), context->buffer.data(), context->state.data());
         } else {
             /* The buffer is not yet full */
-            std::memcpy(reinterpret_cast<uint8_t*>(context->buffer.begin()) + usedspace, data, len);
+            std::memcpy(reinterpret_cast<uint8_t*>(context->buffer.data()) + usedspace, data, len);
             context->bitcount += len << 3;
             /* Clean up: */
             usedspace = freespace = 0;
@@ -189,21 +189,21 @@ void sha256_Update(SHA256_CTX* context, const uint8_t* data, size_t len)
     }
     while (len >= SHA256_BLOCK_LENGTH) {
         /* Process as many complete blocks as we can */
-        std::memcpy(context->buffer.begin(), data, SHA256_BLOCK_LENGTH);
+        std::memcpy(context->buffer.data(), data, SHA256_BLOCK_LENGTH);
 #if BYTE_ORDER == LITTLE_ENDIAN
         /* Convert TO host byte order */
         for (int j = 0; j < 16; ++j) {
             context->buffer[j] = Reverse32(context->buffer[j]);
         }
 #endif
-        sha256_Transform(context->state.begin(), context->buffer.begin(), context->state.begin());
+        sha256_Transform(context->state.data(), context->buffer.data(), context->state.data());
         context->bitcount += SHA256_BLOCK_LENGTH << 3;
         len -= SHA256_BLOCK_LENGTH;
         data += SHA256_BLOCK_LENGTH;
     }
     if (len > 0) {
         /* There's left-overs, so save 'em */
-        std::memcpy(context->buffer.begin(), data, len);
+        std::memcpy(context->buffer.data(), data, len);
         context->bitcount += len << 3;
     }
 }
@@ -216,11 +216,11 @@ void sha256_Final(SHA256_CTX* context, uint8_t digest[])
     if (digest != nullptr) {
         usedspace = (context->bitcount >> 3) % SHA256_BLOCK_LENGTH;
         /* Begin padding with a 1 bit: */
-        reinterpret_cast<uint8_t*>(context->buffer.begin())[usedspace++] = 0x80;
+        reinterpret_cast<uint8_t*>(context->buffer.data())[usedspace++] = 0x80;
 
         if (usedspace > SHA256_SHORT_BLOCK_LENGTH) {
             std::fill_n(
-                reinterpret_cast<uint8_t*>(context->buffer.begin()) + usedspace,
+                reinterpret_cast<uint8_t*>(context->buffer.data()) + usedspace,
                 SHA256_SHORT_BLOCK_LENGTH - usedspace,
                 0);
 
@@ -231,14 +231,14 @@ void sha256_Final(SHA256_CTX* context, uint8_t digest[])
             }
 #endif
             /* Do second-to-last transform: */
-            sha256_Transform(context->state.begin(), context->buffer.begin(), context->state.begin());
+            sha256_Transform(context->state.data(), context->buffer.data(), context->state.data());
 
             /* And prepare the last transform: */
             usedspace = 0;
         }
         /* Set-up for the last transform: */
         std::fill_n(
-            reinterpret_cast<uint8_t*>(context->buffer.begin()) + usedspace,
+            reinterpret_cast<uint8_t*>(context->buffer.data()) + usedspace,
             SHA256_SHORT_BLOCK_LENGTH - usedspace,
             0);
 
@@ -253,7 +253,7 @@ void sha256_Final(SHA256_CTX* context, uint8_t digest[])
         context->buffer[15] = context->bitcount & 0xffffffff;
 
         /* Final transform: */
-        sha256_Transform(context->state.begin(), context->buffer.begin(), context->state.begin());
+        sha256_Transform(context->state.data(), context->buffer.data(), context->state.data());
 
 #if BYTE_ORDER == LITTLE_ENDIAN
         /* Convert FROM host byte order */
@@ -261,7 +261,7 @@ void sha256_Final(SHA256_CTX* context, uint8_t digest[])
             context->state[j] = Reverse32(context->state[j]);
         }
 #endif
-        std::memcpy(digest, context->state.begin(), SHA256_RAW_BYTES_LENGTH);
+        std::memcpy(digest, context->state.data(), SHA256_RAW_BYTES_LENGTH);
     }
 
     /* Clean up state data: */
