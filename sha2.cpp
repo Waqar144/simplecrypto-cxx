@@ -279,7 +279,12 @@ const sha2_word64 sha512_initial_hash_value[8] = {
  * Constant used by SHA256/384/512_End() functions for converting the
  * digest to a readable hexadecimal character string:
  */
-static const char *sha2_hex_digits = "0123456789abcdef";
+static const char* sha2_hex_digits = "0123456789abcdef";
+
+void memzero(void* s, size_t n)
+{
+    memset(s, 0, n);
+}
 
 
 /*** SHA-1: ***********************************************************/
