@@ -7,19 +7,32 @@ on:
     branches: [ master ]
 
 jobs:
-  build-linux:
+  build-unix:
 
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, macos-10.15, ubuntu-18.04, windows-latest, windows-2016]
+        os: [ubuntu-latest, macos-latest, macos-10.15, ubuntu-18.04]
 
     steps:
     - uses: actions/checkout@v2
     - name: Checkout submodules
-#      uses: srt32/git-actions@v0.0.3
       uses: snickerbockers/submodules-init@v4
-    - name: make test
+    - name: test
       run: make runtest
-    - name: make bench
+    - name: bench
       run: make bench
+      
+  build-win:
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, windows-2016]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Checkout submodules
+      uses: snickerbockers/submodules-init@v4
+    - name: build
+      run: mkdir build && cd build && cmake .. && make
