@@ -288,7 +288,7 @@ void sha512_Final(SHA512_CTX* context, uint8_t digest[])
             context->state[j] = reverse64(context->state[j]);
         }
 #endif
-        std::memcpy(digest, context->state.begin(), SHA512_RAW_BYTES_LENGTH);
+        std::memcpy(digest, context->state.data(), SHA512_RAW_BYTES_LENGTH);
     }
 
     /* Zero out state data */
