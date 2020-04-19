@@ -1,0 +1,25 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-linux:
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, macos-10.15, ubuntu-18.04, windows-latest, windows-2016]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Checkout submodules
+#      uses: srt32/git-actions@v0.0.3
+      uses: snickerbockers/submodules-init@v4
+    - name: make test
+      run: make runtest
+    - name: make bench
+      run: make bench
