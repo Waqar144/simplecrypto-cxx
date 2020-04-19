@@ -40,5 +40,9 @@ jobs:
       run: cmake --build build --config Debug
     - name: test
       run: cd build && cd tests && testmain.exe
+    - name: bench_configure
+      run: mkdir build_rel && cd build_rel && cmake -DCMAKE_BUILT_TYPE=Release ..
+    - name: rel_build
+      run: cmake --build build_rel --config Release
     - name: bench
-      run: cd build && bench.exe
+      run: cd build_rel && bench.exe && bench_c.exe
