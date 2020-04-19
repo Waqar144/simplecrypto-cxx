@@ -1,3 +1,9 @@
 [submodule "simplecrypto-cxx/benchmark"]
-	path = simplecrypto-cxx/benchmark
+	path = 3rdparty/benchmark
 	url = https://github.com/google/benchmark.git
+[submodule "3rdparty/benchmark"]
+	path = 3rdparty/benchmark
+	url = https://github.com/google/benchmark.git
+[submodule "3rdparty/googletest"]
+	path = 3rdparty/googletest
+	url = https://github.com/google/googletest.git

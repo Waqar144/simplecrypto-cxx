@@ -2,12 +2,16 @@ cmake_minimum_required(VERSION 3.10)
 
 project(simplecrypto-cxx)
 
+set(BENCHMARK_ENABLE_GTEST_TESTS OFF)
+set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "Suppressing benchmark's tests" FORCE)
+
 add_subdirectory(simplecrypto-cxx)
-add_subdirectory(benchmark)
+add_subdirectory(3rdparty/benchmark)
+add_subdirectory(3rdparty/googletest)
 add_subdirectory(tests)
 
 include_directories(simplecrypto-cxx)
-include_directories(benchmark/googletest/include)
+include_directories(3rdparty/googletest/googletest/include)
 
 add_executable(main
     main.cpp)
