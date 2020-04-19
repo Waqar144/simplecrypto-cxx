@@ -120,7 +120,6 @@ void sha512_Transform(const std::array<uint64_t, 8>& state_in,
 
     std::array<uint64_t, 16> W512;
     std::copy(data.cbegin(), data.cbegin() + 16, W512.begin());
-//    std::copy(data, data + 16, W512.begin());
 
     uint64_t T1{}, T2{};
 
@@ -177,8 +176,6 @@ void sha512_Transform(const std::array<uint64_t, 8>& state_in,
 
 void sha512_Update(SHA512_CTX* context, const uint8_t* data, size_t len)
 {
-    unsigned int freespace{};
-
     if (len == 0) {
         /* Calling with no data is valid - we do nothing */
         return;
@@ -187,11 +184,11 @@ void sha512_Update(SHA512_CTX* context, const uint8_t* data, size_t len)
     uint32_t usedspace = (context->bitcount[0] >> 3) % SHA512_BLOCK_LENGTH;
     if (usedspace > 0) {
         /* Calculate how much free space is available in the buffer */
-        freespace = SHA512_BLOCK_LENGTH - usedspace;
+        unsigned int freespace = SHA512_BLOCK_LENGTH - usedspace;
 
         if (len >= freespace) {
             /* Fill the buffer completely and process it */
-            memcpy(reinterpret_cast<uint8_t*>(context->buffer.data()) + usedspace, data, freespace);
+            std::memcpy(reinterpret_cast<uint8_t*>(context->buffer.data()) + usedspace, data, freespace);
             addInc128(context->bitcount, freespace << 3);
             len -= freespace;
             data += freespace;
@@ -213,7 +210,7 @@ void sha512_Update(SHA512_CTX* context, const uint8_t* data, size_t len)
     }
     while (len >= SHA512_BLOCK_LENGTH) {
         /* Process as many complete blocks as we can */
-        std::memcpy(context->buffer.begin(), data, SHA512_BLOCK_LENGTH);
+        std::memcpy(context->buffer.data(), data, SHA512_BLOCK_LENGTH);
 #if BYTE_ORDER == LITTLE_ENDIAN
         /* Convert TO host byte order */
         for (int j = 0; j < 16; ++j) {
