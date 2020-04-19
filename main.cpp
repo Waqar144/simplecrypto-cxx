@@ -1,8 +1,7 @@
 #include <iostream>
 #include <vector>
+#include <string>
 
-//#include "simplecrypto-cxx/sha2.hpp"
-//#include "simplecrypto-cxx/sha256.h"
 #include "sha512.h"
 
 template <typename T> std::string HexStr(const T itbegin, const T itend)
