@@ -103,7 +103,9 @@ void sha512_Init(SHA512_CTX* context)
     context->state[7] = 0x5be0cd19137e2179ULL;
 }
 
-void sha512_Transform(const uint64_t* state_in, const uint64_t* data, uint64_t* state_out)
+void sha512_Transform(const std::array<uint64_t, 8>& state_in,
+                      const std::array<uint64_t, SHA512_BLOCK_LENGTH / sizeof(uint64_t)>& data,
+                      std::array<uint64_t, 8>& state_out)
 {
 
     /* Initialize registers with the prev. intermediate value */
@@ -117,7 +119,8 @@ void sha512_Transform(const uint64_t* state_in, const uint64_t* data, uint64_t* 
     uint64_t h = state_in[7];
 
     std::array<uint64_t, 16> W512;
-    std::copy(data, data + 16, W512.begin());
+    std::copy(data.cbegin(), data.cbegin() + 16, W512.begin());
+//    std::copy(data, data + 16, W512.begin());
 
     uint64_t T1{}, T2{};
 
@@ -198,7 +201,7 @@ void sha512_Update(SHA512_CTX* context, const uint8_t* data, size_t len)
                 context->buffer[j] = reverse64(context->buffer[j]);
             }
 #endif
-            sha512_Transform(context->state.data(), context->buffer.data(), context->state.data());
+            sha512_Transform(context->state, context->buffer, context->state);
         } else {
             /* The buffer is not yet full */
             std::memcpy(reinterpret_cast<uint8_t*>(context->buffer.data()) + usedspace, data, len);
@@ -217,7 +220,7 @@ void sha512_Update(SHA512_CTX* context, const uint8_t* data, size_t len)
             context->buffer[j] = reverse64(context->buffer[j]);
         }
 #endif
-        sha512_Transform(context->state.data(), context->buffer.data(), context->state.data());
+        sha512_Transform(context->state, context->buffer, context->state);
         addInc128(context->bitcount, SHA512_BLOCK_LENGTH << 3);
         len -= SHA512_BLOCK_LENGTH;
         data += SHA512_BLOCK_LENGTH;
@@ -231,9 +234,7 @@ void sha512_Update(SHA512_CTX* context, const uint8_t* data, size_t len)
 
 static void sha512_Last(SHA512_CTX* context)
 {
-    unsigned int usedspace{};
-
-    usedspace = (context->bitcount[0] >> 3) % SHA512_BLOCK_LENGTH;
+    unsigned int usedspace = (context->bitcount[0] >> 3) % SHA512_BLOCK_LENGTH;
     /* Begin padding with a 1 bit: */
     reinterpret_cast<uint8_t*>(context->buffer.data())[usedspace++] = 0x80;
 
@@ -250,7 +251,7 @@ static void sha512_Last(SHA512_CTX* context)
         }
 #endif
         /* Do second-to-last transform: */
-        sha512_Transform(context->state.data(), context->buffer.data(), context->state.data());
+        sha512_Transform(context->state, context->buffer, context->state);
 
         /* And prepare the last transform: */
         usedspace = 0;
@@ -272,7 +273,7 @@ static void sha512_Last(SHA512_CTX* context)
     context->buffer[15] = context->bitcount[0];
 
     /* Final transform: */
-    sha512_Transform(context->state.data(), context->buffer.data(), context->state.data());
+    sha512_Transform(context->state, context->buffer, context->state);
 }
 
 void sha512_Final(SHA512_CTX* context, uint8_t digest[])
