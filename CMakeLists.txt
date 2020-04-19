@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.10)
 
 project(simplecrypto-cxx)
 
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 set(BENCHMARK_ENABLE_GTEST_TESTS OFF)
 set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "Suppressing benchmark's tests" FORCE)
 
