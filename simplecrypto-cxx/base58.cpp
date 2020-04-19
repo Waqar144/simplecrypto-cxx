@@ -27,7 +27,6 @@ typedef signed long ssize_t;
 
 #include "base58.h"
 
-//#include "memzero.h"
 #include "ripemd160.h"
 #include "sha256.h"
 

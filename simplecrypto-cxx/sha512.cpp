@@ -29,7 +29,9 @@
  * SUCH DAMAGE.
  */
 #include "sha512.h"
+
 #include <cstring>
+#include <string>
 
 static constexpr size_t SHA512_SHORT_BLOCK_LENGTH = SHA512_BLOCK_LENGTH - 16;
 

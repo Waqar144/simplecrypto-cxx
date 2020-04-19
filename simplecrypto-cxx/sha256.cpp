@@ -30,6 +30,7 @@
  */
 #include "sha256.h"
 
+#include <string>
 #include <cstring>
 
 static constexpr size_t SHA256_SHORT_BLOCK_LENGTH = SHA256_BLOCK_LENGTH - 8;
