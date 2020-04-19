@@ -4,7 +4,7 @@
 # lable.md
 
 function(set_project_warnings project_name)
-  option(WARNINGS_AS_ERRORS "Treat compiler warnings as errors" TRUE)
+  option(WARNINGS_AS_ERRORS "Treat compiler warnings as errors" FALSE)
 
   set(MSVC_WARNINGS
       /W4 # Baseline reasonable warnings
@@ -62,8 +62,7 @@ function(set_project_warnings project_name)
   )
 
   if (WARNINGS_AS_ERRORS)
-#    set(CLANG_WARNINGS ${CLANG_WARNINGS} -Werror)
-    set(CLANG_WARNINGS ${CLANG_WARNINGS})
+    set(CLANG_WARNINGS ${CLANG_WARNINGS} -Werror)
     set(MSVC_WARNINGS ${MSVC_WARNINGS} /WX)
   endif()
 

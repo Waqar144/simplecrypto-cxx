@@ -34,15 +34,15 @@ jobs:
     - uses: actions/checkout@v2
     - name: Checkout submodules
       uses: snickerbockers/submodules-init@v4
-    - name: configure
+    - name: dbg_configure
       run: mkdir build && cd build && cmake ..
-    - name: build
+    - name: dbg_build
       run: cmake --build build --config Debug
-    - name: test
-      run: cd build && cd tests && testmain.exe
-    - name: bench_configure
+    - name: tests
+      run: ./build/tests/Debug/testmain.exe
+    - name: rel_configure
       run: mkdir build_rel && cd build_rel && cmake -DCMAKE_BUILT_TYPE=Release ..
     - name: rel_build
-      run: cmake --build build_rel --config Release
+      run: cmake --build build --config Release
     - name: bench
-      run: cd build_rel && bench.exe && bench_c.exe
+      run: ./build/Release/bench.exe && ./build/Release/bench_c.exe
