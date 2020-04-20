@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 
+#include "hmac512.h"
 #include "sha512.h"
 
 template <typename T> std::string HexStr(const T itbegin, const T itend)
@@ -21,8 +22,15 @@ template <typename T> std::string HexStr(const T itbegin, const T itend)
 int main()
 {
     std::string s = "hello";
+    std::string s1 = "abc";
     std::vector<uint8_t> out(SHA512_RAW_BYTES_LENGTH);
-    sha512(reinterpret_cast<const uint8_t*>(s.c_str()), s.length(), &out[0]);
+    //    sha512(reinterpret_cast<const uint8_t*>(s.c_str()), s.length(), &out[0]);
+    hmac_sha512(
+        reinterpret_cast<const uint8_t*>(s1.c_str()),
+        s1.length(),
+        reinterpret_cast<const uint8_t*>(s.c_str()),
+        s.length(),
+        &out[0]);
     //    std::vector<char> o(65);
     //    sha256HexString(reinterpret_cast<const uint8_t*>(s.c_str()), s.length(), &o[0]);
     std::cout << HexStr(out.begin(), out.end());

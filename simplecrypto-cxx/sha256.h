@@ -46,6 +46,7 @@ struct SHA256_CTX {
 };
 
 void sha256_Init(SHA256_CTX* context);
+void sha256_Transform(const uint32_t* state_in, const uint32_t* data, uint32_t* state_out);
 void sha256_Update(SHA256_CTX* context, const uint8_t* data, size_t len);
 void sha256_Final(SHA256_CTX* context, uint8_t digest[]);
 
