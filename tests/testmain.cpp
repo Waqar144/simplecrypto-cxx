@@ -4,14 +4,19 @@
 
 #include <gtest/gtest.h>
 
-template <typename T> std::string HexStr(const T itbegin, const T itend)
+/**
+ * Test vectors are taken from https://www.di-mgt.com.au/sha_testvectors.html
+ */
+
+template <typename T>
+std::string HexStr(const T itbegin, const T itend)
 {
     std::string rv;
     static const char hexmap[16] = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
     rv.reserve(std::distance(itbegin, itend) * 2);
     for (T it = itbegin; it < itend; ++it) {
-        unsigned char val = static_cast<unsigned char>(*it);
+        unsigned char val = (unsigned char)(*it);
         rv.push_back(hexmap[val >> 4]);
         rv.push_back(hexmap[val & 15]);
     }
@@ -54,54 +59,72 @@ TEST(simplecrypto_cxx, sha256Test)
 
 TEST(simplecrypto_cxx, sha512Test)
 {
-    std::string s = "hello";
-    std::string s1 = "019283109238ksla;jdxcv0z98cv012;lkk;asdjfkjxcv08091823091283kljvl;kxcj";
-    std::string s2 = "--123-0909-0123*(*";
-    std::string s3 = "@#)*()(*)!(@*0";
+    std::string s = "abc";
+    std::string s1 = "";
+    std::string s2 = "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq";
+    std::string s3 =
+        "abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlm"
+        "nopqrsmnopqrstnopqrstu";
     std::vector<uint8_t> out(SHA512_RAW_BYTES_LENGTH);
     sha512(reinterpret_cast<const uint8_t*>(s.c_str()), s.length(), &out[0]);
     std::string expected = HexStr(out.begin(), out.end());
     EXPECT_EQ(
         expected,
-        "9b71d224bd62f3785d96d46ad3ea3d73319bfbc2890caadae2dff72519673ca72323c3d99ba5c11d7c7acc6e14"
-        "b8c5da0c4663475c2e5c3adef46f73bcdec043");
+        "ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a2192992a274fc1a836ba3c23a3"
+        "feebbd454d4423643ce80e2a9ac94fa54ca49f");
 
     sha512(reinterpret_cast<const uint8_t*>(s1.c_str()), s1.length(), &out[0]);
     expected = HexStr(out.begin(), out.end());
     EXPECT_EQ(
         expected,
-        "177bed39a0ba132a1fa3e52a2aa0a4d6a61905022021410634dda19a4ffeb2f78f568ffb3b4d7c3a9c7a9a5247"
-        "122cc298dce7020a1395076e7086c3f743e959");
+        "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d287"
+        "7eec2f63b931bd47417a81a538327af927da3e");
 
     sha512(reinterpret_cast<const uint8_t*>(s2.c_str()), s2.length(), &out[0]);
     expected = HexStr(out.begin(), out.end());
     EXPECT_EQ(
         expected,
-        "b6d8768a328241e61d1019c9f053561b948c0ba23dff963341fef9b25870c82dcba80227f7bf5a1e25c9dc0918"
-        "4f57209f1f58151f4db8897327a1a615e2244a");
+        "204a8fc6dda82f0a0ced7beb8e08a41657c16ef468b228a8279be331a703c33596fd15c13b1b07f9aa1d3bea57"
+        "789ca031ad85c7a71dd70354ec631238ca3445");
 
     sha512(reinterpret_cast<const uint8_t*>(s3.c_str()), s3.length(), &out[0]);
     expected = HexStr(out.begin(), out.end());
     EXPECT_EQ(
         expected,
-        "a2cace2cec84583f3b8b3642e6ca308c6c33938d11e210bb7be8d4a543509b15030be609ffc7f0cbf3a6999c9d"
-        "207e343ccf2b6c903f47966fe5aaa44f443e4f");
+        "8e959b75dae313da8cf4f72814fc143f8f7779c6eb9f7fa17299aeadb6889018501d289e4900f7e4331b99dec4"
+        "b5433ac7d329eeb6dd26545e96e55b874be909");
+
+    std::string millionA;
+    millionA.resize(1000000, 'a');
+    sha512(reinterpret_cast<const uint8_t*>(millionA.c_str()), millionA.length(), &out[0]);
+    expected = HexStr(out.begin(), out.end());
+    EXPECT_EQ(
+        expected,
+        "e718483d0ce769644e2e42c7bc15b4638e1f98b13b2044285632a803afa973ebde0ff244877ea60a4cb0432ce5"
+        "77c31beb009c5c2c49aa2e4eadb217ad8cc09b");
 
     /** template test using string and vector as inputs */
 
-    auto output = sha512(s);
+    auto output = sha512(millionA);
+    expected = HexStr(out.begin(), out.end());
+    EXPECT_EQ(
+        expected,
+        "e718483d0ce769644e2e42c7bc15b4638e1f98b13b2044285632a803afa973ebde0ff244877ea60a4cb0432ce5"
+        "77c31beb009c5c2c49aa2e4eadb217ad8cc09b");
+
+    output = sha512(s);
     expected = HexStr(output.begin(), output.end());
     EXPECT_EQ(
         expected,
-        "9b71d224bd62f3785d96d46ad3ea3d73319bfbc2890caadae2dff72519673ca72323c3d99ba5c11d7c7acc6e14"
-        "b8c5da0c4663475c2e5c3adef46f73bcdec043");
+        "ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a2192992a274fc1a836ba3c23a3"
+        "feebbd454d4423643ce80e2a9ac94fa54ca49f");
 
     output = sha512(std::vector<uint8_t>(s.begin(), s.end()));
     expected = HexStr(output.begin(), output.end());
     EXPECT_EQ(
         expected,
-        "9b71d224bd62f3785d96d46ad3ea3d73319bfbc2890caadae2dff72519673ca72323c3d99ba5c11d7c7acc6e14"
-        "b8c5da0c4663475c2e5c3adef46f73bcdec043");
+        "ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a2192992a274fc1a836ba3c23a3"
+        "feebbd454d4423643ce80e2a9ac94fa54ca49f");
 }
 
 TEST(simplecrypto_cxx, ripemd160Test)
