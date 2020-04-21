@@ -1,8 +1,37 @@
+/**
+ * Copyright (c) 2000-2001 Aaron D. Gifford
+ * Copyright (c) 2013-2014 Pavol Rusnak
+ * Copyright (c) 2020 Waqar Ahmed
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of contributors
+ *    may be used to endorse or promote products derived from this software
+ *    without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTOR(S) ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTOR(S) BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ */
+
 #include "pbkdf2.h"
 
 #include "hmac512.h"
-//#include "memzero.h"
-//#include "sha2.hpp"
 
 #include <cstring>
 #include <string>
@@ -69,12 +98,10 @@ void pbkdf2_hmac_sha256_Final(PBKDF2_HMAC_SHA256_CTX* pctx, uint8_t* key)
 #if BYTE_ORDER == LITTLE_ENDIAN
     for (uint32_t k = 0; k < SHA256_RAW_BYTES_LENGTH / sizeof(uint32_t); k++) {
         pctx->f[k] = Reverse32(pctx->f[k]);
-        //        REVERSE32(pctx->f[k], pctx->f[k]);
     }
 #endif
     memcpy(key, pctx->f, SHA256_RAW_BYTES_LENGTH);
     std::memset(pctx, 0, sizeof(PBKDF2_HMAC_SHA256_CTX));
-    //    memzero(pctx, sizeof(PBKDF2_HMAC_SHA256_CTX));
 }
 
 void pbkdf2_hmac_sha256(
@@ -114,13 +141,9 @@ void pbkdf2_hmac_sha512_Init(
 #if BYTE_ORDER == LITTLE_ENDIAN
     for (uint32_t k = 0; k < SHA512_RAW_BYTES_LENGTH / sizeof(uint64_t); k++) {
         pctx->g[k] = reverse64(pctx->g[k]);
-        //        REVERSE64(pctx->g[k], pctx->g[k]);
     }
 #endif
-    //    std::array<uint64_t, 8> tmp;
-    //    std::copy(pctx->g.begin(), pctx->g.begin() + 8, tmp.begin());
     sha512_Transform(pctx->odig, pctx->g, pctx->g.data());
-    //    std::copy(tmp.begin(), tmp.end(), pctx->g.begin());
     memcpy(pctx->f.data(), pctx->g.data(), SHA512_RAW_BYTES_LENGTH);
     pctx->first = 1;
 }
@@ -128,15 +151,8 @@ void pbkdf2_hmac_sha512_Init(
 void pbkdf2_hmac_sha512_Update(PBKDF2_HMAC_SHA512_CTX* pctx, uint32_t iterations)
 {
     for (uint32_t i = pctx->first; i < iterations; i++) {
-        //        std::array<uint64_t, 8> tmp;
-        //        std::copy(pctx->g.begin(), pctx->g.begin() + 8, tmp.begin());
         sha512_Transform(pctx->idig, pctx->g, pctx->g.data());
-        //        std::copy(tmp.begin(), tmp.end(), pctx->g.begin());
-
-        //        tmp.fill(0);
-        //        std::copy(pctx->g.begin(), pctx->g.begin() + 8, tmp.begin());
         sha512_Transform(pctx->odig, pctx->g, pctx->g.data());
-        //        std::copy(tmp.begin(), tmp.end(), pctx->g.begin());
         for (uint32_t j = 0; j < SHA512_RAW_BYTES_LENGTH / sizeof(uint64_t); j++) {
             pctx->f[j] ^= pctx->g[j];
         }
@@ -149,16 +165,19 @@ void pbkdf2_hmac_sha512_Final(PBKDF2_HMAC_SHA512_CTX* pctx, uint8_t* key)
 #if BYTE_ORDER == LITTLE_ENDIAN
     for (uint32_t k = 0; k < SHA512_RAW_BYTES_LENGTH / sizeof(uint64_t); k++) {
         pctx->f[k] = reverse64(pctx->f[k]);
-        //        REVERSE64(pctx->f[k], pctx->f[k]);
     }
 #endif
     memcpy(key, pctx->f.data(), SHA512_RAW_BYTES_LENGTH);
     std::memset(pctx, 0, sizeof(PBKDF2_HMAC_SHA512_CTX));
-    //    memzero(pctx, sizeof(PBKDF2_HMAC_SHA512_CTX));
 }
 
 void pbkdf2_hmac_sha512(
-    const uint8_t* pass, int passlen, const uint8_t* salt, int saltlen, uint32_t iterations, uint8_t* key)
+    const uint8_t* pass,
+    size_t passlen,
+    const uint8_t* salt,
+    size_t saltlen,
+    uint32_t iterations,
+    uint8_t* key)
 {
     PBKDF2_HMAC_SHA512_CTX pctx;
     pbkdf2_hmac_sha512_Init(&pctx, pass, passlen, salt, saltlen);

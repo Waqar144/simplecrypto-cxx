@@ -28,7 +28,7 @@ int main()
     std::string s1 = "abc";
     //    std::vector<uint8_t> out(SHA512_RAW_BYTES_LENGTH);
     std::vector<uint8_t> out(32);
-    pbkdf2_hmac_sha256(
+    pbkdf2_hmac_sha512(
         reinterpret_cast<const uint8_t*>(s.c_str()),
         s.length(),
         reinterpret_cast<const uint8_t*>(s1.c_str()),
