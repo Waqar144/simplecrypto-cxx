@@ -32,7 +32,12 @@ void pbkdf2_hmac_sha256_Init(
 void pbkdf2_hmac_sha256_Update(PBKDF2_HMAC_SHA256_CTX* pctx, uint32_t iterations);
 void pbkdf2_hmac_sha256_Final(PBKDF2_HMAC_SHA256_CTX* pctx, uint8_t* key);
 void pbkdf2_hmac_sha256(
-    const uint8_t* pass, int passlen, const uint8_t* salt, int saltlen, uint32_t iterations, uint8_t* key);
+    const uint8_t* pass,
+    size_t passlen,
+    const uint8_t* salt,
+    size_t saltlen,
+    uint32_t iterations,
+    uint8_t* key);
 
 void pbkdf2_hmac_sha512_Init(
     PBKDF2_HMAC_SHA512_CTX* pctx, const uint8_t* pass, int passlen, const uint8_t* salt, int saltlen);

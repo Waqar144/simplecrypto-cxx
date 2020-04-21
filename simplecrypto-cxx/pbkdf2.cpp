@@ -78,7 +78,12 @@ void pbkdf2_hmac_sha256_Final(PBKDF2_HMAC_SHA256_CTX* pctx, uint8_t* key)
 }
 
 void pbkdf2_hmac_sha256(
-    const uint8_t* pass, int passlen, const uint8_t* salt, int saltlen, uint32_t iterations, uint8_t* key)
+    const uint8_t* pass,
+    size_t passlen,
+    const uint8_t* salt,
+    size_t saltlen,
+    uint32_t iterations,
+    uint8_t* key)
 {
     PBKDF2_HMAC_SHA256_CTX pctx;
     pbkdf2_hmac_sha256_Init(&pctx, pass, passlen, salt, saltlen);
