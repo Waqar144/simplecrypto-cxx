@@ -35,7 +35,7 @@ int main()
     //        s1.length(),
     //        1000,
     //        &out[0]);
-    out = pbkdf2_sha512(s, s1, 1000, 32);
+    out = hashPbkdf2(Algo::SHA256, s, s1, 1000, 32);
     //    sha512(reinterpret_cast<const uint8_t*>(s.c_str()), s.length(), &out[0]);
     //    hmac_sha256(
     //        reinterpret_cast<const uint8_t*>(s1.c_str()),

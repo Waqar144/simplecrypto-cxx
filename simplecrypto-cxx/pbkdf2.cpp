@@ -186,20 +186,33 @@ void pbkdf2_hmac_sha512(
 }
 
 template <>
-std::vector<uint8_t> pbkdf2_sha512<std::string>(
-    const std::string& pass, const std::string& salt, uint32_t iterations, size_t outKeySize)
+std::vector<uint8_t> hashPbkdf2<std::string>(
+    Algo algo, const std::string& pass, const std::string& salt, uint32_t iterations, size_t outKeySize)
 {
     if (outKeySize <= 0) {
         return std::vector<uint8_t>();
     }
 
     std::vector<uint8_t> outKey(outKeySize);
-    pbkdf2_hmac_sha512(
-        reinterpret_cast<const uint8_t*>(pass.c_str()),
-        pass.size(),
-        reinterpret_cast<const uint8_t*>(salt.c_str()),
-        salt.size(),
-        iterations,
-        &outKey[0]);
+    switch (algo) {
+    case Algo::SHA256:
+        pbkdf2_hmac_sha256(
+            reinterpret_cast<const uint8_t*>(pass.c_str()),
+            pass.size(),
+            reinterpret_cast<const uint8_t*>(salt.c_str()),
+            salt.size(),
+            iterations,
+            &outKey[0]);
+        break;
+    case Algo::SHA512:
+        pbkdf2_hmac_sha512(
+            reinterpret_cast<const uint8_t*>(pass.c_str()),
+            pass.size(),
+            reinterpret_cast<const uint8_t*>(salt.c_str()),
+            salt.size(),
+            iterations,
+            &outKey[0]);
+        break;
+    }
     return outKey;
 }

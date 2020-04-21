@@ -74,8 +74,11 @@ void pbkdf2_hmac_sha512(
     uint32_t iterations,
     uint8_t* key);
 
+enum class Algo : unsigned char { SHA256, SHA512 };
+
 template <typename T>
-std::vector<uint8_t> pbkdf2_sha512(const T& pass, const T& salt, uint32_t iterations, size_t outKeySize)
+std::vector<uint8_t> hashPbkdf2(
+    Algo algo, const T& pass, const T& salt, uint32_t iterations, size_t outKeySize)
 {
     using PassType = typename std::decay<decltype(*pass.begin())>::type;
     using SaltType = typename std::decay<decltype(*salt.begin())>::type;
@@ -87,12 +90,21 @@ std::vector<uint8_t> pbkdf2_sha512(const T& pass, const T& salt, uint32_t iterat
     }
 
     std::vector<uint8_t> outKey(outKeySize);
-    pbkdf2_hmac_sha512(pass.data(), pass.size(), salt.data(), salt.size(), iterations, &outKey[0]);
+    switch (algo) {
+    case Algo::SHA256:
+        pbkdf2_hmac_sha256(
+            pass.data(), pass.size(), salt.data(), salt.size(), iterations, &outKey[0]);
+        break;
+    case Algo::SHA512:
+        pbkdf2_hmac_sha512(
+            pass.data(), pass.size(), salt.data(), salt.size(), iterations, &outKey[0]);
+        break;
+    }
     return outKey;
 }
 
 template <>
-std::vector<uint8_t> pbkdf2_sha512<std::string>(
-    const std::string& pass, const std::string& salt, uint32_t iterations, size_t outKeySize);
+std::vector<uint8_t> hashPbkdf2<std::string>(
+    Algo algo, const std::string& pass, const std::string& salt, uint32_t iterations, size_t outKeySize);
 
 #endif // PBKDF2_H
