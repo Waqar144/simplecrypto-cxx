@@ -74,4 +74,25 @@ void pbkdf2_hmac_sha512(
     uint32_t iterations,
     uint8_t* key);
 
+template <typename T>
+std::vector<uint8_t> pbkdf2_sha512(const T& pass, const T& salt, uint32_t iterations, size_t outKeySize)
+{
+    using PassType = typename std::decay<decltype(*pass.begin())>::type;
+    using SaltType = typename std::decay<decltype(*salt.begin())>::type;
+    static_assert(std::is_same<PassType, uint8_t>::value, "uint8_t allowed only");
+    static_assert(std::is_same<SaltType, uint8_t>::value, "uint8_t allowed only");
+
+    if (outKeySize <= 0) {
+        return std::vector<uint8_t>();
+    }
+
+    std::vector<uint8_t> outKey(outKeySize);
+    pbkdf2_hmac_sha512(pass.data(), pass.size(), salt.data(), salt.size(), iterations, &outKey[0]);
+    return outKey;
+}
+
+template <>
+std::vector<uint8_t> pbkdf2_sha512<std::string>(
+    const std::string& pass, const std::string& salt, uint32_t iterations, size_t outKeySize);
+
 #endif // PBKDF2_H

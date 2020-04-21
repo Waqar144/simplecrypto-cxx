@@ -28,13 +28,14 @@ int main()
     std::string s1 = "abc";
     //    std::vector<uint8_t> out(SHA512_RAW_BYTES_LENGTH);
     std::vector<uint8_t> out(32);
-    pbkdf2_hmac_sha512(
-        reinterpret_cast<const uint8_t*>(s.c_str()),
-        s.length(),
-        reinterpret_cast<const uint8_t*>(s1.c_str()),
-        s1.length(),
-        1000,
-        &out[0]);
+    //    pbkdf2_hmac_sha512(
+    //        reinterpret_cast<const uint8_t*>(s.c_str()),
+    //        s.length(),
+    //        reinterpret_cast<const uint8_t*>(s1.c_str()),
+    //        s1.length(),
+    //        1000,
+    //        &out[0]);
+    out = pbkdf2_sha512(s, s1, 1000, 32);
     //    sha512(reinterpret_cast<const uint8_t*>(s.c_str()), s.length(), &out[0]);
     //    hmac_sha256(
     //        reinterpret_cast<const uint8_t*>(s1.c_str()),

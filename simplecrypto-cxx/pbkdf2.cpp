@@ -184,3 +184,22 @@ void pbkdf2_hmac_sha512(
     pbkdf2_hmac_sha512_Update(&pctx, iterations);
     pbkdf2_hmac_sha512_Final(&pctx, key);
 }
+
+template <>
+std::vector<uint8_t> pbkdf2_sha512<std::string>(
+    const std::string& pass, const std::string& salt, uint32_t iterations, size_t outKeySize)
+{
+    if (outKeySize <= 0) {
+        return std::vector<uint8_t>();
+    }
+
+    std::vector<uint8_t> outKey(outKeySize);
+    pbkdf2_hmac_sha512(
+        reinterpret_cast<const uint8_t*>(pass.c_str()),
+        pass.size(),
+        reinterpret_cast<const uint8_t*>(salt.c_str()),
+        salt.size(),
+        iterations,
+        &outKey[0]);
+    return outKey;
+}
