@@ -13,19 +13,33 @@ endif()
 set(BENCHMARK_ENABLE_GTEST_TESTS OFF)
 set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "Suppressing benchmark's tests" FORCE)
 
+OPTION(SIMPLECRYPTO_ENABLE_BENCH "Enable benchmarks" OFF)
+OPTION(SIMPLECRYPTO_ENABLE_TESTS "Enable testing" OFF)
+
 add_subdirectory(simplecrypto-cxx)
+
+if(SIMPLECRYPTO_ENABLE_BENCH)
 add_subdirectory(3rdparty/benchmark)
 add_subdirectory(3rdparty/googletest)
+endif()
+
+if(SIMPLECRYPTO_ENABLE_TESTS)
 add_subdirectory(tests)
+endif()
 
 include_directories(simplecrypto-cxx)
 include_directories(3rdparty/googletest/googletest/include)
 
 add_executable(main
     main.cpp)
+
+if(SIMPLECRYPTO_ENABLE_BENCH)
 add_executable(bench bench.cpp)
 add_executable(bench_c bench_c.cpp sha2.cpp)
 
-target_link_libraries(main PRIVATE simplecrypto-cxx)
 target_link_libraries(bench PRIVATE benchmark::benchmark simplecrypto-cxx)
 target_link_libraries(bench_c PRIVATE benchmark::benchmark simplecrypto-cxx)
+endif()
+
+target_link_libraries(main PRIVATE simplecrypto-cxx)
+
