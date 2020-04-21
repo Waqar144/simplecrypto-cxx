@@ -105,9 +105,11 @@ void sha512_Init(SHA512_CTX* context)
     context->state[7] = 0x5be0cd19137e2179ULL;
 }
 
-void sha512_Transform(const std::array<uint64_t, 8>& state_in,
-                      const std::array<uint64_t, SHA512_BLOCK_LENGTH / sizeof(uint64_t)>& data,
-                      std::array<uint64_t, 8>& state_out)
+void sha512_Transform(
+    const std::array<uint64_t, 8>& state_in,
+    const std::array<uint64_t, SHA512_BLOCK_LENGTH / sizeof(uint64_t)>& data,
+    //                      std::array<uint64_t, 8>& state_out)
+    uint64_t* state_out)
 {
 
     /* Initialize registers with the prev. intermediate value */
@@ -200,7 +202,7 @@ void sha512_Update(SHA512_CTX* context, const uint8_t* data, size_t len)
                 context->buffer[j] = reverse64(context->buffer[j]);
             }
 #endif
-            sha512_Transform(context->state, context->buffer, context->state);
+            sha512_Transform(context->state, context->buffer, context->state.data());
         } else {
             /* The buffer is not yet full */
             std::memcpy(reinterpret_cast<uint8_t*>(context->buffer.data()) + usedspace, data, len);
@@ -219,7 +221,7 @@ void sha512_Update(SHA512_CTX* context, const uint8_t* data, size_t len)
             context->buffer[j] = reverse64(context->buffer[j]);
         }
 #endif
-        sha512_Transform(context->state, context->buffer, context->state);
+        sha512_Transform(context->state, context->buffer, context->state.data());
         addInc128(context->bitcount, SHA512_BLOCK_LENGTH << 3);
         len -= SHA512_BLOCK_LENGTH;
         data += SHA512_BLOCK_LENGTH;
@@ -250,7 +252,7 @@ static void sha512_Last(SHA512_CTX* context)
         }
 #endif
         /* Do second-to-last transform: */
-        sha512_Transform(context->state, context->buffer, context->state);
+        sha512_Transform(context->state, context->buffer, context->state.data());
 
         /* And prepare the last transform: */
         usedspace = 0;
@@ -272,7 +274,7 @@ static void sha512_Last(SHA512_CTX* context)
     context->buffer[15] = context->bitcount[0];
 
     /* Final transform: */
-    sha512_Transform(context->state, context->buffer, context->state);
+    sha512_Transform(context->state, context->buffer, context->state.data());
 }
 
 void sha512_Final(SHA512_CTX* context, uint8_t digest[])

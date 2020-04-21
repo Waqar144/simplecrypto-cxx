@@ -49,7 +49,7 @@ void sha512_Init(SHA512_CTX* context);
 void sha512_Transform(
     const std::array<uint64_t, 8>& state_in,
     const std::array<uint64_t, SHA512_BLOCK_LENGTH / sizeof(uint64_t)>& data,
-    std::array<uint64_t, 8>& state_out);
+    uint64_t* state_out);
 void sha512_Update(SHA512_CTX* context, const uint8_t*, size_t);
 void sha512_Final(SHA512_CTX* context, uint8_t out[SHA512_RAW_BYTES_LENGTH]);
 
