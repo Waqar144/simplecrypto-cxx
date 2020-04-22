@@ -39,27 +39,31 @@
 
 enum class HMAC_ALGO : unsigned char { Sha256, Sha512 };
 
-struct HMAC_SHA256_CTX {
-    std::array<uint8_t, SHA256_BLOCK_LENGTH> o_key_pad;
-    SHA256_CTX ctx;
+template <typename CTX, size_t BLOCK_LEN>
+struct HMAC_CTX {
+    std::array<uint8_t, BLOCK_LEN> o_key_pad;
+    CTX ctx;
 };
 
-struct HMAC_SHA512_CTX {
-    std::array<uint8_t, SHA512_BLOCK_LENGTH> o_key_pad;
-    SHA512_CTX ctx;
-};
+template <typename CTX, size_t BLOCK_LEN>
+void hmac_sha256_Init(HMAC_CTX<CTX, BLOCK_LEN>* hctx, const uint8_t* key, const uint32_t keylen);
+template <typename CTX, size_t BLOCK_LEN>
+void hmac_sha256_Update(HMAC_CTX<CTX, BLOCK_LEN>* hctx, const uint8_t* msg, const uint32_t msglen);
+template <typename CTX, size_t BLOCK_LEN>
+void hmac_sha256_Final(HMAC_CTX<CTX, BLOCK_LEN>* hctx, uint8_t* hmac);
 
-void hmac_sha256_Init(HMAC_SHA256_CTX* hctx, const uint8_t* key, const uint32_t keylen);
-void hmac_sha256_Update(HMAC_SHA256_CTX* hctx, const uint8_t* msg, const uint32_t msglen);
-void hmac_sha256_Final(HMAC_SHA256_CTX* hctx, uint8_t* hmac);
 void hmac_sha256(
     const uint8_t* key, const uint32_t keylen, const uint8_t* msg, const uint32_t msglen, uint8_t* hmac);
 void hmac_sha256_prepare(
     const uint8_t* key, const uint32_t keylen, uint32_t* opad_digest, uint32_t* ipad_digest);
 
-void hmac_sha512_Init(HMAC_SHA512_CTX* hctx, const uint8_t* key, const uint32_t keylen);
-void hmac_sha512_Update(HMAC_SHA512_CTX* hctx, const uint8_t* msg, const uint32_t msglen);
-void hmac_sha512_Final(HMAC_SHA512_CTX* hctx, uint8_t* hmac);
+template <typename CTX, size_t BLOCK_LEN>
+void hmac_sha512_Init(HMAC_CTX<CTX, BLOCK_LEN>* hctx, const uint8_t* key, const uint32_t keylen);
+template <typename CTX, size_t BLOCK_LEN>
+void hmac_sha512_Update(HMAC_CTX<CTX, BLOCK_LEN>* hctx, const uint8_t* msg, const uint32_t msglen);
+template <typename CTX, size_t BLOCK_LEN>
+void hmac_sha512_Final(HMAC_CTX<CTX, BLOCK_LEN>* hctx, uint8_t* hmac);
+
 void hmac_sha512(
     const uint8_t* key, const uint32_t keylen, const uint8_t* msg, const uint32_t msglen, uint8_t* hmac);
 void hmac_sha512_prepare(

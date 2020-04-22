@@ -56,8 +56,9 @@ static constexpr uint32_t sha256_initial_hash_value[8] = {0x6a09e667UL,
                                                           0x9b05688cUL,
                                                           0x1f83d9abUL,
                                                           0x5be0cd19UL};
-
-void hmac_sha256_Init(HMAC_SHA256_CTX* hctx, const uint8_t* key, const uint32_t keylen)
+template <>
+void hmac_sha256_Init(
+    HMAC_CTX<SHA256_CTX, SHA256_BLOCK_LENGTH>* hctx, const uint8_t* key, const uint32_t keylen)
 {
     static uint8_t i_key_pad[SHA256_BLOCK_LENGTH];
     memset(i_key_pad, 0, SHA256_BLOCK_LENGTH);
@@ -75,12 +76,15 @@ void hmac_sha256_Init(HMAC_SHA256_CTX* hctx, const uint8_t* key, const uint32_t 
     std::memset(i_key_pad, 0, sizeof(i_key_pad));
 }
 
-void hmac_sha256_Update(HMAC_SHA256_CTX* hctx, const uint8_t* msg, const uint32_t msglen)
+template <>
+void hmac_sha256_Update(
+    HMAC_CTX<SHA256_CTX, SHA256_BLOCK_LENGTH>* hctx, const uint8_t* msg, const uint32_t msglen)
 {
     sha256_Update(&(hctx->ctx), msg, msglen);
 }
 
-void hmac_sha256_Final(HMAC_SHA256_CTX* hctx, uint8_t* hmac)
+template <>
+void hmac_sha256_Final(HMAC_CTX<SHA256_CTX, SHA256_BLOCK_LENGTH>* hctx, uint8_t* hmac)
 {
     sha256_Final(&(hctx->ctx), hmac);
     sha256_Init(&(hctx->ctx));
@@ -93,7 +97,7 @@ void hmac_sha256_Final(HMAC_SHA256_CTX* hctx, uint8_t* hmac)
 void hmac_sha256(
     const uint8_t* key, const uint32_t keylen, const uint8_t* msg, const uint32_t msglen, uint8_t* hmac)
 {
-    static HMAC_SHA256_CTX hctx;
+    static HMAC_CTX<SHA256_CTX, SHA256_BLOCK_LENGTH> hctx;
     hmac_sha256_Init(&hctx, key, keylen);
     hmac_sha256_Update(&hctx, msg, msglen);
     hmac_sha256_Final(&hctx, hmac);
@@ -143,7 +147,9 @@ static constexpr std::array<uint64_t, 8> sha512_initial_hash_value = {0x6a09e667
                                                                       0x1f83d9abfb41bd6bULL,
                                                                       0x5be0cd19137e2179ULL};
 
-void hmac_sha512_Init(HMAC_SHA512_CTX* hctx, const uint8_t* key, const uint32_t keylen)
+template <>
+void hmac_sha512_Init(
+    HMAC_CTX<SHA512_CTX, SHA512_BLOCK_LENGTH>* hctx, const uint8_t* key, const uint32_t keylen)
 {
     static uint8_t i_key_pad[SHA512_BLOCK_LENGTH];
     memset(i_key_pad, 0, SHA512_BLOCK_LENGTH);
@@ -161,12 +167,15 @@ void hmac_sha512_Init(HMAC_SHA512_CTX* hctx, const uint8_t* key, const uint32_t 
     std::memset(i_key_pad, 0, sizeof(i_key_pad));
 }
 
-void hmac_sha512_Update(HMAC_SHA512_CTX* hctx, const uint8_t* msg, const uint32_t msglen)
+template <>
+void hmac_sha512_Update(
+    HMAC_CTX<SHA512_CTX, SHA512_BLOCK_LENGTH>* hctx, const uint8_t* msg, const uint32_t msglen)
 {
     sha512_Update(&(hctx->ctx), msg, msglen);
 }
 
-void hmac_sha512_Final(HMAC_SHA512_CTX* hctx, uint8_t* hmac)
+template <>
+void hmac_sha512_Final(HMAC_CTX<SHA512_CTX, SHA512_BLOCK_LENGTH>* hctx, uint8_t* hmac)
 {
     sha512_Final(&(hctx->ctx), hmac);
     sha512_Init(&(hctx->ctx));
@@ -179,7 +188,7 @@ void hmac_sha512_Final(HMAC_SHA512_CTX* hctx, uint8_t* hmac)
 void hmac_sha512(
     const uint8_t* key, const uint32_t keylen, const uint8_t* msg, const uint32_t msglen, uint8_t* hmac)
 {
-    HMAC_SHA512_CTX hctx;
+    HMAC_CTX<SHA512_CTX, SHA512_BLOCK_LENGTH> hctx;
     hmac_sha512_Init(&hctx, key, keylen);
     hmac_sha512_Update(&hctx, msg, msglen);
     hmac_sha512_Final(&hctx, hmac);
