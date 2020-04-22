@@ -53,9 +53,9 @@ template <typename CTX, size_t BLOCK_LEN>
 void hmac_sha256_Final(HMAC_CTX<CTX, BLOCK_LEN>* hctx, uint8_t* hmac);
 
 void hmac_sha256(
-    const uint8_t* key, const uint32_t keylen, const uint8_t* msg, const uint32_t msglen, uint8_t* hmac);
+    const uint8_t* key, const size_t keylen, const uint8_t* msg, const size_t msglen, uint8_t* hmac);
 void hmac_sha256_prepare(
-    const uint8_t* key, const uint32_t keylen, uint32_t* opad_digest, uint32_t* ipad_digest);
+    const uint8_t* key, const size_t keylen, uint32_t* opad_digest, uint32_t* ipad_digest);
 
 template <typename CTX, size_t BLOCK_LEN>
 void hmac_sha512_Init(HMAC_CTX<CTX, BLOCK_LEN>* hctx, const uint8_t* key, const uint32_t keylen);
@@ -65,10 +65,10 @@ template <typename CTX, size_t BLOCK_LEN>
 void hmac_sha512_Final(HMAC_CTX<CTX, BLOCK_LEN>* hctx, uint8_t* hmac);
 
 void hmac_sha512(
-    const uint8_t* key, const uint32_t keylen, const uint8_t* msg, const uint32_t msglen, uint8_t* hmac);
+    const uint8_t* key, const size_t keylen, const uint8_t* msg, const size_t msglen, uint8_t* hmac);
 void hmac_sha512_prepare(
     const uint8_t* key,
-    const uint32_t keylen,
+    const size_t keylen,
     std::array<uint64_t, 8>& opad_digest,
     std::array<uint64_t, 8>& ipad_digest);
 

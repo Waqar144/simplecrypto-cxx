@@ -95,7 +95,7 @@ void hmac_sha256_Final(HMAC_CTX<SHA256_CTX, SHA256_BLOCK_LENGTH>* hctx, uint8_t*
 }
 
 void hmac_sha256(
-    const uint8_t* key, const uint32_t keylen, const uint8_t* msg, const uint32_t msglen, uint8_t* hmac)
+    const uint8_t* key, const size_t keylen, const uint8_t* msg, const size_t msglen, uint8_t* hmac)
 {
     static HMAC_CTX<SHA256_CTX, SHA256_BLOCK_LENGTH> hctx;
     hmac_sha256_Init(&hctx, key, keylen);
@@ -104,7 +104,7 @@ void hmac_sha256(
 }
 
 void hmac_sha256_prepare(
-    const uint8_t* key, const uint32_t keylen, uint32_t* opad_digest, uint32_t* ipad_digest)
+    const uint8_t* key, const size_t keylen, uint32_t* opad_digest, uint32_t* ipad_digest)
 {
     static uint32_t key_pad[SHA256_BLOCK_LENGTH / sizeof(uint32_t)];
 
@@ -186,7 +186,7 @@ void hmac_sha512_Final(HMAC_CTX<SHA512_CTX, SHA512_BLOCK_LENGTH>* hctx, uint8_t*
 }
 
 void hmac_sha512(
-    const uint8_t* key, const uint32_t keylen, const uint8_t* msg, const uint32_t msglen, uint8_t* hmac)
+    const uint8_t* key, const size_t keylen, const uint8_t* msg, const size_t msglen, uint8_t* hmac)
 {
     HMAC_CTX<SHA512_CTX, SHA512_BLOCK_LENGTH> hctx;
     hmac_sha512_Init(&hctx, key, keylen);
@@ -196,7 +196,7 @@ void hmac_sha512(
 
 void hmac_sha512_prepare(
     const uint8_t* key,
-    const uint32_t keylen,
+    const size_t keylen,
     std::array<uint64_t, 8>& opad_digest,
     std::array<uint64_t, 8>& ipad_digest)
 {
