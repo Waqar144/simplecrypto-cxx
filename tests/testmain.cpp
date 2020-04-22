@@ -1,4 +1,5 @@
 #include "hmac.h"
+#include "pbkdf2.h"
 #include "ripemd160.h"
 #include "sha256.h"
 #include "sha512.h"
@@ -171,6 +172,27 @@ TEST(simplecrypto_cxx, HMAC_SHA_512_Test)
         result,
         "7b458e1a9dda7dcff225037f22ddb4d2c47b706fe380a70a4952d9905f4c0aae1d52bcbf014a33b769e8029771"
         "fe92cbd8337ba3a2580ad46788985567cb7a3e");
+}
+
+TEST(simplecrypto_cxx, PBKDF2_SHA_256_Test)
+{
+    std::string pass = "hello";
+    std::string salt = "abc";
+    auto out = hashPbkdf2(Algo::SHA256, pass, salt, 2048, 32);
+    std::string result = HexStr(out.begin(), out.end());
+    EXPECT_EQ(result, "58dcba26894a4a35becb388922b4419978c41ad9275d80c4b8a417fbf2d88bc8");
+}
+
+TEST(simplecrypto_cxx, PBKDF2_SHA_512_Test)
+{
+    std::string pass = "hello";
+    std::string salt = "abc";
+    auto out = hashPbkdf2(Algo::SHA512, pass, salt, 2048, 64);
+    std::string result = HexStr(out.begin(), out.end());
+    EXPECT_EQ(
+        result,
+        "c6e96c103506b1ff45e419d26e82751d8a39e608063f03171db0f5fe6250b69736506d34daff8f1bf571b784b1"
+        "6b00d67f90de910744aec2996baf938dd48abf");
 }
 
 
