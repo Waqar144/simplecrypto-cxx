@@ -133,6 +133,66 @@ static void BM_HMACSHA256CPP_VEC(benchmark::State& state)
     }
 }
 
+static void BM_PBKDF2_SHA256(benchmark::State& state)
+{
+    std::string pass = "abc";
+    std::string salt = "abc";
+    const unsigned char* uPass = reinterpret_cast<const unsigned char*>(pass.c_str());
+    const unsigned char* uSalt = reinterpret_cast<const unsigned char*>(salt.c_str());
+    std::vector<uint8_t> out(SHA256_RAW_BYTES_LENGTH);
+    for (auto _ : state) {
+        pbkdf2_hmac_sha256(uPass, pass.size(), uSalt, salt.size(), 2048, &out[0]);
+    }
+}
+
+static void BM_PBKDF2_SHA512(benchmark::State& state)
+{
+    std::string pass = "abc";
+    std::string salt = "abc";
+    const unsigned char* uPass = reinterpret_cast<const unsigned char*>(pass.c_str());
+    const unsigned char* uSalt = reinterpret_cast<const unsigned char*>(salt.c_str());
+    std::vector<uint8_t> out(SHA512_RAW_BYTES_LENGTH);
+    for (auto _ : state) {
+        pbkdf2_hmac_sha512(uPass, pass.size(), uSalt, salt.size(), 2048, &out[0]);
+    }
+}
+
+static void BM_PBKDF2_SHA256_CPP(benchmark::State& state)
+{
+    std::string pass = "abc";
+    std::string salt = "abc";
+    for (auto _ : state) {
+        hashPbkdf2(Algo::SHA256, pass, salt, 2048, 32);
+    }
+}
+
+static void BM_PBKDF2_SHA512_CPP(benchmark::State& state)
+{
+    std::string pass = "abc";
+    std::string salt = "abc";
+    for (auto _ : state) {
+        hashPbkdf2(Algo::SHA512, pass, salt, 2048, 64);
+    }
+}
+
+static void BM_PBKDF2_SHA256_CPP_VEC(benchmark::State& state)
+{
+    auto pass = strToVec("abc");
+    auto salt = strToVec("abc");
+    for (auto _ : state) {
+        hashPbkdf2(Algo::SHA256, pass, salt, 2048, 32);
+    }
+}
+
+static void BM_PBKDF2_SHA512_CPP_VEC(benchmark::State& state)
+{
+    auto pass = strToVec("abc");
+    auto salt = strToVec("abc");
+    for (auto _ : state) {
+        hashPbkdf2(Algo::SHA512, pass, salt, 2048, 64);
+    }
+}
+
 
 BENCHMARK(BM_SHA256);
 BENCHMARK(BM_SHA512);
@@ -146,5 +206,11 @@ BENCHMARK(BM_HMACSHA512CPP);
 BENCHMARK(BM_HMACSHA256CPP);
 BENCHMARK(BM_HMACSHA512CPP_VEC);
 BENCHMARK(BM_HMACSHA256CPP_VEC);
+BENCHMARK(BM_PBKDF2_SHA256);
+BENCHMARK(BM_PBKDF2_SHA512);
+BENCHMARK(BM_PBKDF2_SHA256_CPP);
+BENCHMARK(BM_PBKDF2_SHA512_CPP);
+BENCHMARK(BM_PBKDF2_SHA256_CPP_VEC);
+BENCHMARK(BM_PBKDF2_SHA512_CPP_VEC);
 
 BENCHMARK_MAIN();
