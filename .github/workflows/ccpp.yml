@@ -35,13 +35,13 @@ jobs:
     - name: Checkout submodules
       uses: snickerbockers/submodules-init@v4
     - name: dbg_configure
-      run: mkdir build && cd build && cmake ..
+      run: mkdir build && cd build && cmake -DSIMPLECRYPTO_ENABLE_TESTS=ON ..
     - name: dbg_build
       run: cmake --build build --config Debug
     - name: tests
       run: ./build/tests/Debug/testmain.exe
     - name: rel_configure
-      run: mkdir build_rel && cd build_rel && cmake -DCMAKE_BUILT_TYPE=Release ..
+      run: mkdir build_rel && cd build_rel && cmake -DCMAKE_BUILT_TYPE=Release -DSIMPLECRYPTO_ENABLE_BENCH=ON ..
     - name: rel_build
       run: cmake --build build --config Release
     - name: bench

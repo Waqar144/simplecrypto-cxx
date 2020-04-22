@@ -20,15 +20,15 @@ add_subdirectory(simplecrypto-cxx)
 
 if(SIMPLECRYPTO_ENABLE_BENCH)
 add_subdirectory(3rdparty/benchmark)
-add_subdirectory(3rdparty/googletest)
 endif()
 
 if(SIMPLECRYPTO_ENABLE_TESTS)
+add_subdirectory(3rdparty/googletest)
+include_directories(3rdparty/googletest/googletest/include)
 add_subdirectory(tests)
 endif()
 
 include_directories(simplecrypto-cxx)
-include_directories(3rdparty/googletest/googletest/include)
 
 add_executable(main
     main.cpp)
