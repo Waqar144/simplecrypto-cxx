@@ -91,7 +91,7 @@ void hmac_sha256_Final(HMAC_CTX<SHA256_CTX, SHA256_BLOCK_LENGTH>* hctx, uint8_t*
     sha256_Update(&(hctx->ctx), hctx->o_key_pad.data(), SHA256_BLOCK_LENGTH);
     sha256_Update(&(hctx->ctx), hmac, SHA256_RAW_BYTES_LENGTH);
     sha256_Final(&(hctx->ctx), hmac);
-    std::memset(hctx, 0, sizeof(HMAC_SHA256_CTX));
+    std::memset(hctx, 0, sizeof(HMAC_CTX<SHA256_CTX, SHA256_BLOCK_LENGTH>));
 }
 
 void hmac_sha256(
@@ -182,7 +182,7 @@ void hmac_sha512_Final(HMAC_CTX<SHA512_CTX, SHA512_BLOCK_LENGTH>* hctx, uint8_t*
     sha512_Update(&(hctx->ctx), hctx->o_key_pad.data(), SHA512_BLOCK_LENGTH);
     sha512_Update(&(hctx->ctx), hmac, SHA512_RAW_BYTES_LENGTH);
     sha512_Final(&(hctx->ctx), hmac);
-    std::memset(hctx, 0, sizeof(HMAC_SHA512_CTX));
+    std::memset(hctx, 0, sizeof(HMAC_CTX<SHA512_CTX, SHA512_BLOCK_LENGTH>));
 }
 
 void hmac_sha512(
