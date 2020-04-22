@@ -1,3 +1,4 @@
+#include "hmac.h"
 #include "ripemd160.h"
 #include "sha256.h"
 #include "sha512.h"
@@ -149,6 +150,27 @@ TEST(simplecrypto_cxx, ripemd160Test)
     ripemd160(reinterpret_cast<const uint8_t*>(s3.c_str()), s3.length(), &out[0]);
     expected = HexStr(out.begin(), out.end());
     EXPECT_EQ(expected, "901b4e3a8601b2465039e78fae054b88333f30ff");
+}
+
+TEST(simplecrypto_cxx, HMAC_SHA_256_Test)
+{
+    std::string msg = "hello";
+    std::string key = "abc";
+    auto out = hashHmac(HMAC_ALGO::Sha256, key, msg);
+    std::string result = HexStr(out.begin(), out.end());
+    EXPECT_EQ(result, "f3166a3a404599d2046ed2aae479b37d54b51d2e85259c9e314042753be7d813");
+}
+
+TEST(simplecrypto_cxx, HMAC_SHA_512_Test)
+{
+    std::string msg = "hello";
+    std::string key = "abc";
+    auto out = hashHmac(HMAC_ALGO::Sha512, key, msg);
+    std::string result = HexStr(out.begin(), out.end());
+    EXPECT_EQ(
+        result,
+        "7b458e1a9dda7dcff225037f22ddb4d2c47b706fe380a70a4952d9905f4c0aae1d52bcbf014a33b769e8029771"
+        "fe92cbd8337ba3a2580ad46788985567cb7a3e");
 }
 
 
