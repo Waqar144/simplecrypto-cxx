@@ -28,7 +28,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-#include "hmac512.h"
+#include "hmac.h"
 
 #include <cstring>
 #include <string>
@@ -222,4 +222,31 @@ void hmac_sha512_prepare(
 
     sha512_Transform(sha512_initial_hash_value, key_pad, ipad_digest.data());
     std::memset(key_pad.data(), 0, sizeof(key_pad));
+}
+
+template <>
+std::vector<uint8_t> hashHmac(HMAC_ALGO algo, const std::string& key, const std::string& msg)
+{
+    std::vector<uint8_t> outHmac;
+    switch (algo) {
+    case HMAC_ALGO::Sha256:
+        outHmac.resize(SHA256_RAW_BYTES_LENGTH);
+        hmac_sha256(
+            reinterpret_cast<const uint8_t*>(key.c_str()),
+            key.size(),
+            reinterpret_cast<const uint8_t*>(msg.c_str()),
+            msg.size(),
+            &outHmac[0]);
+        break;
+    case HMAC_ALGO::Sha512:
+        outHmac.resize(SHA512_RAW_BYTES_LENGTH);
+        hmac_sha512(
+            reinterpret_cast<const uint8_t*>(key.c_str()),
+            key.size(),
+            reinterpret_cast<const uint8_t*>(msg.c_str()),
+            msg.size(),
+            &outHmac[0]);
+        break;
+    }
+    return outHmac;
 }
