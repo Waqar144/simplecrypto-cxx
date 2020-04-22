@@ -34,26 +34,27 @@
 #include "sha256.h"
 #include "sha512.h"
 
-typedef struct _PBKDF2_HMAC_SHA256_CTX {
-    uint32_t odig[SHA256_RAW_BYTES_LENGTH / sizeof(uint32_t)];
-    uint32_t idig[SHA256_RAW_BYTES_LENGTH / sizeof(uint32_t)];
-    uint32_t f[SHA256_RAW_BYTES_LENGTH / sizeof(uint32_t)];
-    uint32_t g[SHA256_BLOCK_LENGTH / sizeof(uint32_t)];
+template <typename T, size_t BLOCK_LEN, size_t RAW_BYTES_LEN>
+struct PBKDF2_CTX {
+    std::array<T, RAW_BYTES_LEN / sizeof(T)> odig;
+    std::array<T, RAW_BYTES_LEN / sizeof(T)> idig;
+    std::array<T, RAW_BYTES_LEN / sizeof(T)> f;
+    std::array<T, BLOCK_LEN / sizeof(T)> g;
     char first;
-} PBKDF2_HMAC_SHA256_CTX;
+};
 
-typedef struct _PBKDF2_HMAC_SHA512_CTX {
-    std::array<uint64_t, SHA512_RAW_BYTES_LENGTH / sizeof(uint64_t)> odig;
-    std::array<uint64_t, SHA512_RAW_BYTES_LENGTH / sizeof(uint64_t)> idig;
-    std::array<uint64_t, SHA512_RAW_BYTES_LENGTH / sizeof(uint64_t)> f;
-    std::array<uint64_t, SHA512_BLOCK_LENGTH / sizeof(uint64_t)> g;
-    char first;
-} PBKDF2_HMAC_SHA512_CTX;
-
+template <typename T, size_t BLOCK_LEN, size_t RAW_BYTES_LEN>
 void pbkdf2_hmac_sha256_Init(
-    PBKDF2_HMAC_SHA256_CTX* pctx, const uint8_t* pass, int passlen, const uint8_t* salt, int saltlen);
-void pbkdf2_hmac_sha256_Update(PBKDF2_HMAC_SHA256_CTX* pctx, uint32_t iterations);
-void pbkdf2_hmac_sha256_Final(PBKDF2_HMAC_SHA256_CTX* pctx, uint8_t* key);
+    PBKDF2_CTX<T, BLOCK_LEN, RAW_BYTES_LEN>* pctx,
+    const uint8_t* pass,
+    int passlen,
+    const uint8_t* salt,
+    int saltlen);
+template <typename T, size_t BLOCK_LEN, size_t RAW_BYTES_LEN>
+void pbkdf2_hmac_sha256_Update(PBKDF2_CTX<T, BLOCK_LEN, RAW_BYTES_LEN>* pctx, uint32_t iterations);
+template <typename T, size_t BLOCK_LEN, size_t RAW_BYTES_LEN>
+void pbkdf2_hmac_sha256_Final(PBKDF2_CTX<T, BLOCK_LEN, RAW_BYTES_LEN>* pctx, uint8_t* key);
+
 void pbkdf2_hmac_sha256(
     const uint8_t* pass,
     size_t passlen,
@@ -62,10 +63,18 @@ void pbkdf2_hmac_sha256(
     uint32_t iterations,
     uint8_t* key);
 
+template <typename T, size_t BLOCK_LEN, size_t RAW_BYTES_LEN>
 void pbkdf2_hmac_sha512_Init(
-    PBKDF2_HMAC_SHA512_CTX* pctx, const uint8_t* pass, int passlen, const uint8_t* salt, int saltlen);
-void pbkdf2_hmac_sha512_Update(PBKDF2_HMAC_SHA512_CTX* pctx, uint32_t iterations);
-void pbkdf2_hmac_sha512_Final(PBKDF2_HMAC_SHA512_CTX* pctx, uint8_t* key);
+    PBKDF2_CTX<T, BLOCK_LEN, RAW_BYTES_LEN>* pctx,
+    const uint8_t* pass,
+    int passlen,
+    const uint8_t* salt,
+    int saltlen);
+template <typename T, size_t BLOCK_LEN, size_t RAW_BYTES_LEN>
+void pbkdf2_hmac_sha512_Update(PBKDF2_CTX<T, BLOCK_LEN, RAW_BYTES_LEN>* pctx, uint32_t iterations);
+template <typename T, size_t BLOCK_LEN, size_t RAW_BYTES_LEN>
+void pbkdf2_hmac_sha512_Final(PBKDF2_CTX<T, BLOCK_LEN, RAW_BYTES_LEN>* pctx, uint8_t* key);
+
 void pbkdf2_hmac_sha512(
     const uint8_t* pass,
     size_t passlen,

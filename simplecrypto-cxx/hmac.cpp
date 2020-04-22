@@ -48,14 +48,14 @@ static constexpr inline uint32_t Reverse32(uint32_t w)
 }
 #endif /* BYTE_ORDER == LITTLE_ENDIAN */
 
-static constexpr uint32_t sha256_initial_hash_value[8] = {0x6a09e667UL,
-                                                          0xbb67ae85UL,
-                                                          0x3c6ef372UL,
-                                                          0xa54ff53aUL,
-                                                          0x510e527fUL,
-                                                          0x9b05688cUL,
-                                                          0x1f83d9abUL,
-                                                          0x5be0cd19UL};
+static constexpr std::array<uint32_t, 8> sha256_initial_hash_value = {0x6a09e667UL,
+                                                                      0xbb67ae85UL,
+                                                                      0x3c6ef372UL,
+                                                                      0xa54ff53aUL,
+                                                                      0x510e527fUL,
+                                                                      0x9b05688cUL,
+                                                                      0x1f83d9abUL,
+                                                                      0x5be0cd19UL};
 template <>
 void hmac_sha256_Init(
     HMAC_CTX<SHA256_CTX, SHA256_BLOCK_LENGTH>* hctx, const uint8_t* key, const uint32_t keylen)
@@ -106,16 +106,16 @@ void hmac_sha256(
 void hmac_sha256_prepare(
     const uint8_t* key, const size_t keylen, uint32_t* opad_digest, uint32_t* ipad_digest)
 {
-    static uint32_t key_pad[SHA256_BLOCK_LENGTH / sizeof(uint32_t)];
+    static std::array<uint32_t, SHA256_BLOCK_LENGTH / sizeof(uint32_t)> key_pad;
 
-    std::memset(key_pad, 0, sizeof(key_pad));
+    std::memset(key_pad.data(), 0, sizeof(key_pad));
     if (keylen > SHA256_BLOCK_LENGTH) {
         static SHA256_CTX context;
         sha256_Init(&context);
         sha256_Update(&context, key, keylen);
-        sha256_Final(&context, (uint8_t*)key_pad);
+        sha256_Final(&context, (uint8_t*)key_pad.data());
     } else {
-        memcpy(key_pad, key, keylen);
+        memcpy(key_pad.data(), key, keylen);
     }
 
     /* compute o_key_pad and its digest */
@@ -135,7 +135,7 @@ void hmac_sha256_prepare(
         key_pad[i] = key_pad[i] ^ 0x5c5c5c5c ^ 0x36363636;
     }
     sha256_Transform(sha256_initial_hash_value, key_pad, ipad_digest);
-    std::memset(key_pad, 0, sizeof(key_pad));
+    std::memset(key_pad.data(), 0, sizeof(key_pad));
 }
 
 static constexpr std::array<uint64_t, 8> sha512_initial_hash_value = {0x6a09e667f3bcc908ULL,
