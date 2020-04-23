@@ -31,24 +31,21 @@
 #include <string>
 
 /*
- * 32-bit integer manipulation macros (little endian)
+ * 32-bit integer manipulation functions (little endian)
  */
-#ifndef GET_UINT32_LE
-#define GET_UINT32_LE(n, b, i)                                                                                                        \
-    {                                                                                                                                 \
-        (n) = ((uint32_t)(b)[(i)]) | ((uint32_t)(b)[(i) + 1] << 8) | ((uint32_t)(b)[(i) + 2] << 16) | ( (uint32_t) (b)[(i) + 3] << 24 );            \
+static inline constexpr uint32_t getUint32LE(const uint8_t* b, uint32_t i)
+{
+    return (uint32_t)(b[i]) | (uint32_t)(b[i + 1] << 8) | (uint32_t)(b[i + 2] << 16) |
+        (uint32_t)(b[i + 3] << 24);
 }
-#endif
 
-#ifndef PUT_UINT32_LE
-#define PUT_UINT32_LE(n,b,i)                                    \
-{                                                               \
-    (b)[(i)    ] = (uint8_t) ( ( (n)       ) & 0xFF );    \
-    (b)[(i) + 1] = (uint8_t) ( ( (n) >>  8 ) & 0xFF );    \
-    (b)[(i) + 2] = (uint8_t) ( ( (n) >> 16 ) & 0xFF );    \
-    (b)[(i) + 3] = (uint8_t) ( ( (n) >> 24 ) & 0xFF );    \
+static inline void putUint32LE(uint32_t n, uint8_t* b, uint32_t i)
+{
+    b[i] = (uint8_t)(n & 0xFF);
+    b[i + 1] = (uint8_t)((n >> 8) & 0xFF);
+    b[i + 2] = (uint8_t)((n >> 16) & 0xFF);
+    b[i + 3] = (uint8_t)((n >> 24) & 0xFF);
 }
-#endif
 
 /*
  * RIPEMD-160 context setup
@@ -73,22 +70,22 @@ void ripemd160_process( RIPEMD160_CTX *ctx, const uint8_t data[RIPEMD160_BLOCK_L
 {
     uint32_t A, B, C, D, E, Ap, Bp, Cp, Dp, Ep, X[16];
 
-    GET_UINT32_LE( X[ 0], data,  0 );
-    GET_UINT32_LE( X[ 1], data,  4 );
-    GET_UINT32_LE( X[ 2], data,  8 );
-    GET_UINT32_LE( X[ 3], data, 12 );
-    GET_UINT32_LE( X[ 4], data, 16 );
-    GET_UINT32_LE( X[ 5], data, 20 );
-    GET_UINT32_LE( X[ 6], data, 24 );
-    GET_UINT32_LE( X[ 7], data, 28 );
-    GET_UINT32_LE( X[ 8], data, 32 );
-    GET_UINT32_LE( X[ 9], data, 36 );
-    GET_UINT32_LE( X[10], data, 40 );
-    GET_UINT32_LE( X[11], data, 44 );
-    GET_UINT32_LE( X[12], data, 48 );
-    GET_UINT32_LE( X[13], data, 52 );
-    GET_UINT32_LE( X[14], data, 56 );
-    GET_UINT32_LE( X[15], data, 60 );
+    X[0] = getUint32LE(data, 0);
+    X[1] = getUint32LE(data, 4);
+    X[2] = getUint32LE(data, 8);
+    X[3] = getUint32LE(data, 12);
+    X[4] = getUint32LE(data, 16);
+    X[5] = getUint32LE(data, 20);
+    X[6] = getUint32LE(data, 24);
+    X[7] = getUint32LE(data, 28);
+    X[8] = getUint32LE(data, 32);
+    X[9] = getUint32LE(data, 36);
+    X[10] = getUint32LE(data, 40);
+    X[11] = getUint32LE(data, 44);
+    X[12] = getUint32LE(data, 48);
+    X[13] = getUint32LE(data, 52);
+    X[14] = getUint32LE(data, 56);
+    X[15] = getUint32LE(data, 60);
 
     A = Ap = ctx->state[0];
     B = Bp = ctx->state[1];
@@ -96,27 +93,27 @@ void ripemd160_process( RIPEMD160_CTX *ctx, const uint8_t data[RIPEMD160_BLOCK_L
     D = Dp = ctx->state[3];
     E = Ep = ctx->state[4];
 
-#define F1( x, y, z )   ( x ^ y ^ z )
-#define F2( x, y, z )   ( ( x & y ) | ( ~x & z ) )
-#define F3( x, y, z )   ( ( x | ~y ) ^ z )
-#define F4( x, y, z )   ( ( x & z ) | ( y & ~z ) )
-#define F5( x, y, z )   ( x ^ ( y | ~z ) )
+#    define F1(x, y, z) (x ^ y ^ z)
+#    define F2(x, y, z) ((x & y) | (~x & z))
+#    define F3(x, y, z) ((x | ~y) ^ z)
+#    define F4(x, y, z) ((x & z) | (y & ~z))
+#    define F5(x, y, z) (x ^ (y | ~z))
 
-#define S( x, n ) ( ( x << n ) | ( x >> (32 - n) ) )
+#    define S(x, n) ((x << n) | (x >> (32 - n)))
 
-#define P( a, b, c, d, e, r, s, f, k )      \
-    a += f( b, c, d ) + X[r] + k;           \
-    a = S( a, s ) + e;                      \
-    c = S( c, 10 );
+#    define P(a, b, c, d, e, r, s, f, k)                                                           \
+        a += f(b, c, d) + X[r] + k;                                                                \
+        a = S(a, s) + e;                                                                           \
+        c = S(c, 10);
 
-#define P2( a, b, c, d, e, r, s, rp, sp )   \
-    P( a, b, c, d, e, r, s, F, K );         \
-    P( a ## p, b ## p, c ## p, d ## p, e ## p, rp, sp, Fp, Kp );
+#    define P2(a, b, c, d, e, r, s, rp, sp)                                                        \
+        P(a, b, c, d, e, r, s, F, K);                                                              \
+        P(a##p, b##p, c##p, d##p, e##p, rp, sp, Fp, Kp);
 
-#define F   F1
-#define K   0x00000000
-#define Fp  F5
-#define Kp  0x50A28BE6
+#    define F F1
+#    define K 0x00000000
+#    define Fp F5
+#    define Kp 0x50A28BE6
     P2( A, B, C, D, E,  0, 11,  5,  8 );
     P2( E, A, B, C, D,  1, 14, 14,  9 );
     P2( D, E, A, B, C,  2, 15,  7,  9 );
@@ -308,22 +305,22 @@ void ripemd160_Final( RIPEMD160_CTX *ctx, uint8_t output[RIPEMD160_DIGEST_LENGTH
 
     high = ( ctx->total[0] >> 29 )
          | ( ctx->total[1] <<  3 );
-    low  = ( ctx->total[0] <<  3 );
+    low = (ctx->total[0] << 3);
 
-    PUT_UINT32_LE( low,  msglen, 0 );
-    PUT_UINT32_LE( high, msglen, 4 );
+    putUint32LE(low, msglen, 0);
+    putUint32LE(high, msglen, 4);
 
     last = ctx->total[0] & 0x3F;
     padn = ( last < 56 ) ? ( 56 - last ) : ( 120 - last );
 
     ripemd160_Update( ctx, ripemd160_padding, padn );
-    ripemd160_Update( ctx, msglen, 8 );
+    ripemd160_Update(ctx, msglen, 8);
 
-    PUT_UINT32_LE( ctx->state[0], output,  0 );
-    PUT_UINT32_LE( ctx->state[1], output,  4 );
-    PUT_UINT32_LE( ctx->state[2], output,  8 );
-    PUT_UINT32_LE( ctx->state[3], output, 12 );
-    PUT_UINT32_LE(ctx->state[4], output, 16);
+    putUint32LE(ctx->state[0], output, 0);
+    putUint32LE(ctx->state[1], output, 4);
+    putUint32LE(ctx->state[2], output, 8);
+    putUint32LE(ctx->state[3], output, 12);
+    putUint32LE(ctx->state[4], output, 16);
 
     std::memset(ctx, 0, sizeof(RIPEMD160_CTX));
 }
