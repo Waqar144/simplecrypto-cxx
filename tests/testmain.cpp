@@ -1,3 +1,4 @@
+#include "base58.h"
 #include "hmac.h"
 #include "pbkdf2.h"
 #include "ripemd160.h"
@@ -195,6 +196,17 @@ TEST(simplecrypto_cxx, PBKDF2_SHA_512_Test)
         "6b00d67f90de910744aec2996baf938dd48abf");
 }
 
+TEST(simplecrypto_cxx, BASE58_ENC)
+{
+    std::string text = "abc";
+    std::string out;
+    out.resize(5);
+    size_t size = 5;
+    b58enc(&out[0], &size, reinterpret_cast<const uint8_t*>(text.c_str()), text.size());
+    std::string expect = "ZiCa";
+    std::string result{out.data(), out.size() - 1};
+    EXPECT_EQ(result, expect);
+}
 
 int main(int argc, char** argv)
 {
