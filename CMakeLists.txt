@@ -35,10 +35,8 @@ add_executable(main
 
 if(SIMPLECRYPTO_ENABLE_BENCH)
 add_executable(bench bench.cpp)
-add_executable(bench_c bench_c.cpp sha2.cpp)
 
 target_link_libraries(bench PRIVATE benchmark::benchmark simplecrypto-cxx)
-target_link_libraries(bench_c PRIVATE benchmark::benchmark simplecrypto-cxx)
 endif()
 
 target_link_libraries(main PRIVATE simplecrypto-cxx)

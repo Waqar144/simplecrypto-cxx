@@ -199,7 +199,7 @@ int base58_encode_check(const uint8_t* data, size_t datalen, char* str, size_t s
     }
 
     std::vector<uint8_t> buf(datalen + 32);
-    uint8_t *hash = &buf[0] + datalen;
+    uint8_t* hash = &buf[0] + datalen;
     memcpy(&buf[0], data, datalen);
 
     sha256(data, datalen, hash);
