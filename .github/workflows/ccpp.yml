@@ -20,8 +20,6 @@ jobs:
       uses: snickerbockers/submodules-init@v4
     - name: test
       run: make runtest
-    - name: bench
-      run: make bench
       
   build-win:
 
@@ -44,5 +42,3 @@ jobs:
       run: mkdir build_rel && cd build_rel && cmake -DSIMPLECRYPTO_ENABLE_BENCH=ON ..
     - name: rel_build
       run: cmake --build build --config Release
-    - name: bench
-      run: ./build/Release/bench.exe && ./build/Release/bench_c.exe

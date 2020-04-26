@@ -12,7 +12,7 @@ The code is not all mine, most of it is C code written by other people. I am try
 - PBKDF2 SHA-256
 - PBKDF2 SHA-512
 - Base 58
-- RIPEMD 169 (ready, basically c code)
+- RIPEMD 160 (ready, basically c code)
 
 ## Build
 
