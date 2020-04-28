@@ -1,4 +1,4 @@
-add_executable(testmain testmain.cpp)
+add_executable(testmain testmain.cpp sha3_tests.h test_utils.h)
 
 include_directories(../simplecrypto-cxx/)
 
