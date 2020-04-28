@@ -13,24 +13,23 @@
 TEST(simplecrypto_cxx, sha3_224_test)
 {
     std::string s = "abc";
-    std::vector<uint8_t> out(28);
-    sha3<224>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    auto out = sha3<224>(std::vector<uint8_t>{s.begin(), s.end()});
     std::string result = HexStr(out.begin(), out.end());
     EXPECT_EQ(result, "e642824c3f8cf24ad09234ee7d3c766fc9a3a5168d0c94ad73b46fdf");
 
     s = "";
-    sha3<224>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    out = sha3<224>(std::vector<uint8_t>{s.begin(), s.end()});
     result = HexStr(out.begin(), out.end());
     EXPECT_EQ(result, "6b4e03423667dbb73b6e15454f0eb1abd4597f9a1b078e3f5b5a6bc7");
 
     s = "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq";
-    sha3<224>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    out = sha3<224>(std::vector<uint8_t>{s.begin(), s.end()});
     result = HexStr(out.begin(), out.end());
     EXPECT_EQ(result, "8a24108b154ada21c9fd5574494479ba5c7e7ab76ef264ead0fcce33");
 
     s = "abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlm"
         "nopqrsmnopqrstnopqrstu";
-    sha3<224>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    out = sha3<224>(std::vector<uint8_t>{s.begin(), s.end()});
     result = HexStr(out.begin(), out.end());
     EXPECT_EQ(result, "543e6868e1666c1a643630df77367ae5a62a85070a51c14cbf665cbc");
 }
@@ -39,7 +38,7 @@ TEST(simplecrypto_cxx, sha3_384_test)
 {
     std::string s = "abc";
     std::vector<uint8_t> out(48);
-    sha3<384>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    out = sha3<384>(std::vector<uint8_t>{s.begin(), s.end()});
     std::string result = HexStr(out.begin(), out.end());
     EXPECT_EQ(
         result,
@@ -47,7 +46,7 @@ TEST(simplecrypto_cxx, sha3_384_test)
         "376d25");
 
     s = "";
-    sha3<384>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    out = sha3<384>(std::vector<uint8_t>{s.begin(), s.end()});
     result = HexStr(out.begin(), out.end());
     EXPECT_EQ(
         result,
@@ -55,7 +54,7 @@ TEST(simplecrypto_cxx, sha3_384_test)
         "d5f004");
 
     s = "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq";
-    sha3<384>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    out = sha3<384>(std::vector<uint8_t>{s.begin(), s.end()});
     result = HexStr(out.begin(), out.end());
     EXPECT_EQ(
         result,
@@ -64,7 +63,7 @@ TEST(simplecrypto_cxx, sha3_384_test)
 
     s = "abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlm"
         "nopqrsmnopqrstnopqrstu";
-    sha3<384>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    out = sha3<384>(std::vector<uint8_t>{s.begin(), s.end()});
     result = HexStr(out.begin(), out.end());
     EXPECT_EQ(
         result,
@@ -76,30 +75,29 @@ TEST(simplecrypto_cxx, sha3_384_test)
 TEST(simplecrypto_cxx, sha3_256_test)
 {
     std::string s = "abc";
-    std::vector<uint8_t> out(32);
-    sha3<256>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    auto out = sha3<256>(std::vector<uint8_t>{s.begin(), s.end()});
     std::string result = HexStr(out.begin(), out.end());
     EXPECT_EQ(result, "3a985da74fe225b2045c172d6bd390bd855f086e3e9d525b46bfe24511431532");
 
     s = "";
-    sha3<256>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    out = sha3<256>(std::vector<uint8_t>{s.begin(), s.end()});
     result = HexStr(out.begin(), out.end());
     EXPECT_EQ(result, "a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a");
 
     s = "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq";
-    sha3<256>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    out = sha3<256>(std::vector<uint8_t>{s.begin(), s.end()});
     result = HexStr(out.begin(), out.end());
     EXPECT_EQ(result, "41c0dba2a9d6240849100376a8235e2c82e1b9998a999e21db32dd97496d3376");
 
     s = "abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlm"
         "nopqrsmnopqrstnopqrstu";
-    sha3<256>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    out = sha3<256>(std::vector<uint8_t>{s.begin(), s.end()});
     result = HexStr(out.begin(), out.end());
     EXPECT_EQ(result, "916f6061fe879741ca6469b43971dfdb28b1a32dc36cb3254e812be27aad1d18");
 
     std::string millionA;
     millionA.resize(1000000, 'a');
-    sha3<256>(reinterpret_cast<const uint8_t*>(millionA.c_str()), millionA.size(), &out[0]);
+    out = sha3<256>(std::vector<uint8_t>{millionA.begin(), millionA.end()});
     result = HexStr(out.begin(), out.end());
     EXPECT_EQ(result, "5c8875ae474a3634ba4fd55ec85bffd661f32aca75c6d699d0cdcb6c115891c1");
 
@@ -117,8 +115,7 @@ TEST(simplecrypto_cxx, sha3_256_test)
 TEST(simplecrypto_cxx, sha3_512_test)
 {
     std::string s = "abc";
-    std::vector<uint8_t> out(64);
-    sha3<512>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    auto out = sha3<512>(std::vector<uint8_t>{s.begin(), s.end()});
     std::string result = HexStr(out.begin(), out.end());
     EXPECT_EQ(
         result,
@@ -126,7 +123,7 @@ TEST(simplecrypto_cxx, sha3_512_test)
         "884f5d0240d2712e10e116e9192af3c91a7ec57647e3934057340b4cf408d5a56592f8274eec53f0");
 
     s = "";
-    sha3<512>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    out = sha3<512>(std::vector<uint8_t>{s.begin(), s.end()});
     result = HexStr(out.begin(), out.end());
     EXPECT_EQ(
         result,
@@ -134,7 +131,7 @@ TEST(simplecrypto_cxx, sha3_512_test)
         "3ac558f500199d95b6d3e301758586281dcd26");
 
     s = "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq";
-    sha3<512>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    out = sha3<512>(std::vector<uint8_t>{s.begin(), s.end()});
     result = HexStr(out.begin(), out.end());
     EXPECT_EQ(
         result,
@@ -143,7 +140,7 @@ TEST(simplecrypto_cxx, sha3_512_test)
 
     s = "abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlm"
         "nopqrsmnopqrstnopqrstu";
-    sha3<512>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    out = sha3<512>(std::vector<uint8_t>{s.begin(), s.end()});
     result = HexStr(out.begin(), out.end());
     EXPECT_EQ(
         result,
@@ -152,7 +149,7 @@ TEST(simplecrypto_cxx, sha3_512_test)
 
     std::string millionA;
     millionA.resize(1000000, 'a');
-    sha3<512>(reinterpret_cast<const uint8_t*>(millionA.c_str()), millionA.size(), &out[0]);
+    out = sha3<512>(std::vector<uint8_t>{millionA.begin(), millionA.end()});
     result = HexStr(out.begin(), out.end());
     EXPECT_EQ(
         result,
