@@ -22,6 +22,7 @@
 
 #include <cstdint>
 #include <stddef.h>
+#include <type_traits>
 
 static constexpr size_t sha3_224_hash_size = 28;
 static constexpr size_t sha3_256_hash_size = 32;
@@ -56,6 +57,11 @@ typedef struct SHA3_CTX {
 
 /* methods for calculating the hash function */
 
+template <
+    size_t BITS,
+    typename = typename std::enable_if<BITS == 224 || BITS == 256 || BITS == 384 || BITS == 512>::type>
+void sha3_Init(SHA3_CTX* ctx);
+
 void sha3_224_Init(SHA3_CTX* ctx);
 void sha3_256_Init(SHA3_CTX* ctx);
 void sha3_384_Init(SHA3_CTX* ctx);
@@ -63,11 +69,7 @@ void sha3_512_Init(SHA3_CTX* ctx);
 void sha3_Update(SHA3_CTX* ctx, const unsigned char* msg, size_t size);
 void sha3_Final(SHA3_CTX* ctx, unsigned char* result);
 
-#define keccak_224_Init sha3_224_Init
-#define keccak_256_Init sha3_256_Init
-#define keccak_384_Init sha3_384_Init
-#define keccak_512_Init sha3_512_Init
-#define keccak_Update sha3_Update
+const auto keccak_Update = sha3_Update;
 void keccak_Final(SHA3_CTX* ctx, unsigned char* result);
 
 void keccak_256(const unsigned char* data, size_t len, unsigned char* digest);

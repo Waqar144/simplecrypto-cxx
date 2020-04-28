@@ -59,39 +59,10 @@ static void keccak_Init(SHA3_CTX* ctx, unsigned bits)
  *
  * @param ctx context to initialize
  */
-void sha3_224_Init(SHA3_CTX* ctx)
+template <size_t BITS, typename EnableIf>
+void sha3_Init(SHA3_CTX* ctx)
 {
-    keccak_Init(ctx, 224);
-}
-
-/**
- * Initialize context before calculating hash.
- *
- * @param ctx context to initialize
- */
-void sha3_256_Init(SHA3_CTX* ctx)
-{
-    keccak_Init(ctx, 256);
-}
-
-/**
- * Initialize context before calculating hash.
- *
- * @param ctx context to initialize
- */
-void sha3_384_Init(SHA3_CTX* ctx)
-{
-    keccak_Init(ctx, 384);
-}
-
-/**
- * Initialize context before calculating hash.
- *
- * @param ctx context to initialize
- */
-void sha3_512_Init(SHA3_CTX* ctx)
-{
-    keccak_Init(ctx, 512);
+    keccak_Init(ctx, BITS);
 }
 
 /* Keccak theta() transformation */
@@ -257,7 +228,7 @@ static void sha3_process_block(uint64_t hash[25], const uint64_t* block, size_t 
     sha3_permutation(hash);
 }
 
-#define SHA3_FINALIZED 0x80000000
+static constexpr uint32_t SHA3_FINALIZED = 0x80000000;
 
 /**
  * Calculate message hash.
@@ -367,7 +338,7 @@ void keccak_Final(SHA3_CTX* ctx, unsigned char* result)
 void keccak_256(const unsigned char* data, size_t len, unsigned char* digest)
 {
     SHA3_CTX ctx;
-    keccak_256_Init(&ctx);
+    keccak_Init(&ctx, 256);
     keccak_Update(&ctx, data, len);
     keccak_Final(&ctx, digest);
 }
@@ -375,7 +346,7 @@ void keccak_256(const unsigned char* data, size_t len, unsigned char* digest)
 void keccak_512(const unsigned char* data, size_t len, unsigned char* digest)
 {
     SHA3_CTX ctx;
-    keccak_512_Init(&ctx);
+    keccak_Init(&ctx, 512);
     keccak_Update(&ctx, data, len);
     keccak_Final(&ctx, digest);
 }
@@ -383,7 +354,7 @@ void keccak_512(const unsigned char* data, size_t len, unsigned char* digest)
 void sha3_256(const unsigned char* data, size_t len, unsigned char* digest)
 {
     SHA3_CTX ctx;
-    sha3_256_Init(&ctx);
+    sha3_Init<256>(&ctx);
     sha3_Update(&ctx, data, len);
     sha3_Final(&ctx, digest);
 }
@@ -391,7 +362,7 @@ void sha3_256(const unsigned char* data, size_t len, unsigned char* digest)
 void sha3_512(const unsigned char* data, size_t len, unsigned char* digest)
 {
     SHA3_CTX ctx;
-    sha3_512_Init(&ctx);
+    sha3_Init<512>(&ctx);
     sha3_Update(&ctx, data, len);
     sha3_Final(&ctx, digest);
 }
