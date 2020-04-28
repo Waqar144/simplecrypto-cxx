@@ -64,6 +64,11 @@ void sha3_Init(SHA3_CTX* ctx)
 {
     keccak_Init(ctx, BITS);
 }
+/* Fwd instantiations */
+template void sha3_Init<224>(SHA3_CTX* ctx);
+template void sha3_Init<256>(SHA3_CTX* ctx);
+template void sha3_Init<384>(SHA3_CTX* ctx);
+template void sha3_Init<512>(SHA3_CTX* ctx);
 
 /* Keccak theta() transformation */
 static void keccak_theta(uint64_t* A)
@@ -335,34 +340,16 @@ void keccak_Final(SHA3_CTX* ctx, unsigned char* result)
     std::memset(ctx, 0, sizeof(SHA3_CTX));
 }
 
-void keccak_256(const unsigned char* data, size_t len, unsigned char* digest)
+template <size_t BITS, typename EnableIf>
+void keccak(const unsigned char* data, size_t len, unsigned char* digest)
 {
     SHA3_CTX ctx;
-    keccak_Init(&ctx, 256);
+    keccak_Init(&ctx, BITS);
     keccak_Update(&ctx, data, len);
     keccak_Final(&ctx, digest);
 }
-
-void keccak_512(const unsigned char* data, size_t len, unsigned char* digest)
-{
-    SHA3_CTX ctx;
-    keccak_Init(&ctx, 512);
-    keccak_Update(&ctx, data, len);
-    keccak_Final(&ctx, digest);
-}
-
-void sha3_256(const unsigned char* data, size_t len, unsigned char* digest)
-{
-    SHA3_CTX ctx;
-    sha3_Init<256>(&ctx);
-    sha3_Update(&ctx, data, len);
-    sha3_Final(&ctx, digest);
-}
-
-void sha3_512(const unsigned char* data, size_t len, unsigned char* digest)
-{
-    SHA3_CTX ctx;
-    sha3_Init<512>(&ctx);
-    sha3_Update(&ctx, data, len);
-    sha3_Final(&ctx, digest);
-}
+/* Fwd instantiations */
+template void keccak<224>(const unsigned char* data, size_t len, unsigned char* digest);
+template void keccak<256>(const unsigned char* data, size_t len, unsigned char* digest);
+template void keccak<384>(const unsigned char* data, size_t len, unsigned char* digest);
+template void keccak<512>(const unsigned char* data, size_t len, unsigned char* digest);

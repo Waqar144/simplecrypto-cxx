@@ -62,10 +62,6 @@ template <
     typename = typename std::enable_if<BITS == 224 || BITS == 256 || BITS == 384 || BITS == 512>::type>
 void sha3_Init(SHA3_CTX* ctx);
 
-void sha3_224_Init(SHA3_CTX* ctx);
-void sha3_256_Init(SHA3_CTX* ctx);
-void sha3_384_Init(SHA3_CTX* ctx);
-void sha3_512_Init(SHA3_CTX* ctx);
 void sha3_Update(SHA3_CTX* ctx, const unsigned char* msg, size_t size);
 void sha3_Final(SHA3_CTX* ctx, unsigned char* result);
 
@@ -75,7 +71,18 @@ void keccak_Final(SHA3_CTX* ctx, unsigned char* result);
 void keccak_256(const unsigned char* data, size_t len, unsigned char* digest);
 void keccak_512(const unsigned char* data, size_t len, unsigned char* digest);
 
-void sha3_256(const unsigned char* data, size_t len, unsigned char* digest);
-void sha3_512(const unsigned char* data, size_t len, unsigned char* digest);
+template <
+    size_t BITS,
+    typename = typename std::enable_if<BITS == 224 || BITS == 256 || BITS == 384 || BITS == 512>::type>
+void keccak(const unsigned char* data, size_t len, unsigned char* digest);
+
+template <size_t BITS>
+void sha3(const unsigned char* data, size_t len, unsigned char* digest)
+{
+    SHA3_CTX ctx;
+    sha3_Init<BITS>(&ctx);
+    sha3_Update(&ctx, data, len);
+    sha3_Final(&ctx, digest);
+}
 
 #endif /* __SHA3_H__ */
