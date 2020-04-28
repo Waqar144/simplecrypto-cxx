@@ -10,33 +10,96 @@
  * https://www.di-mgt.com.au/sha_testvectors.html
  */
 
+TEST(simplecrypto_cxx, sha3_224_test)
+{
+    std::string s = "abc";
+    std::vector<uint8_t> out(28);
+    sha3<224>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    std::string result = HexStr(out.begin(), out.end());
+    EXPECT_EQ(result, "e642824c3f8cf24ad09234ee7d3c766fc9a3a5168d0c94ad73b46fdf");
+
+    s = "";
+    sha3<224>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    result = HexStr(out.begin(), out.end());
+    EXPECT_EQ(result, "6b4e03423667dbb73b6e15454f0eb1abd4597f9a1b078e3f5b5a6bc7");
+
+    s = "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq";
+    sha3<224>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    result = HexStr(out.begin(), out.end());
+    EXPECT_EQ(result, "8a24108b154ada21c9fd5574494479ba5c7e7ab76ef264ead0fcce33");
+
+    s = "abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlm"
+        "nopqrsmnopqrstnopqrstu";
+    sha3<224>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    result = HexStr(out.begin(), out.end());
+    EXPECT_EQ(result, "543e6868e1666c1a643630df77367ae5a62a85070a51c14cbf665cbc");
+}
+
+TEST(simplecrypto_cxx, sha3_384_test)
+{
+    std::string s = "abc";
+    std::vector<uint8_t> out(48);
+    sha3<384>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    std::string result = HexStr(out.begin(), out.end());
+    EXPECT_EQ(
+        result,
+        "ec01498288516fc926459f58e2c6ad8df9b473cb0fc08c2596da7cf0e49be4b298d88cea927ac7f539f1edf228"
+        "376d25");
+
+    s = "";
+    sha3<384>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    result = HexStr(out.begin(), out.end());
+    EXPECT_EQ(
+        result,
+        "0c63a75b845e4f7d01107d852e4c2485c51a50aaaa94fc61995e71bbee983a2ac3713831264adb47fb6bd1e058"
+        "d5f004");
+
+    s = "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq";
+    sha3<384>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    result = HexStr(out.begin(), out.end());
+    EXPECT_EQ(
+        result,
+        "991c665755eb3a4b6bbdfb75c78a492e8c56a22c5c4d7e429bfdbc32b9d4ad5aa04a1f076e62fea19eef51acd0"
+        "657c22");
+
+    s = "abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlm"
+        "nopqrsmnopqrstnopqrstu";
+    sha3<384>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    result = HexStr(out.begin(), out.end());
+    EXPECT_EQ(
+        result,
+        "79407d3b5916b59c3e30b09822974791c313fb9ecc849e406f23592d04f625dc8c709b98b43b3852b337216179"
+        "aa7fc7");
+}
+
+
 TEST(simplecrypto_cxx, sha3_256_test)
 {
     std::string s = "abc";
     std::vector<uint8_t> out(32);
-    sha3_256(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    sha3<256>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
     std::string result = HexStr(out.begin(), out.end());
     EXPECT_EQ(result, "3a985da74fe225b2045c172d6bd390bd855f086e3e9d525b46bfe24511431532");
 
     s = "";
-    sha3_256(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    sha3<256>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
     result = HexStr(out.begin(), out.end());
     EXPECT_EQ(result, "a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a");
 
     s = "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq";
-    sha3_256(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    sha3<256>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
     result = HexStr(out.begin(), out.end());
     EXPECT_EQ(result, "41c0dba2a9d6240849100376a8235e2c82e1b9998a999e21db32dd97496d3376");
 
     s = "abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlm"
         "nopqrsmnopqrstnopqrstu";
-    sha3_256(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    sha3<256>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
     result = HexStr(out.begin(), out.end());
     EXPECT_EQ(result, "916f6061fe879741ca6469b43971dfdb28b1a32dc36cb3254e812be27aad1d18");
 
     std::string millionA;
     millionA.resize(1000000, 'a');
-    sha3_256(reinterpret_cast<const uint8_t*>(millionA.c_str()), millionA.size(), &out[0]);
+    sha3<256>(reinterpret_cast<const uint8_t*>(millionA.c_str()), millionA.size(), &out[0]);
     result = HexStr(out.begin(), out.end());
     EXPECT_EQ(result, "5c8875ae474a3634ba4fd55ec85bffd661f32aca75c6d699d0cdcb6c115891c1");
 
@@ -55,7 +118,7 @@ TEST(simplecrypto_cxx, sha3_512_test)
 {
     std::string s = "abc";
     std::vector<uint8_t> out(64);
-    sha3_512(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    sha3<512>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
     std::string result = HexStr(out.begin(), out.end());
     EXPECT_EQ(
         result,
@@ -63,7 +126,7 @@ TEST(simplecrypto_cxx, sha3_512_test)
         "884f5d0240d2712e10e116e9192af3c91a7ec57647e3934057340b4cf408d5a56592f8274eec53f0");
 
     s = "";
-    sha3_512(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    sha3<512>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
     result = HexStr(out.begin(), out.end());
     EXPECT_EQ(
         result,
@@ -71,7 +134,7 @@ TEST(simplecrypto_cxx, sha3_512_test)
         "3ac558f500199d95b6d3e301758586281dcd26");
 
     s = "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq";
-    sha3_512(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    sha3<512>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
     result = HexStr(out.begin(), out.end());
     EXPECT_EQ(
         result,
@@ -80,7 +143,7 @@ TEST(simplecrypto_cxx, sha3_512_test)
 
     s = "abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlm"
         "nopqrsmnopqrstnopqrstu";
-    sha3_512(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    sha3<512>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
     result = HexStr(out.begin(), out.end());
     EXPECT_EQ(
         result,
@@ -89,7 +152,7 @@ TEST(simplecrypto_cxx, sha3_512_test)
 
     std::string millionA;
     millionA.resize(1000000, 'a');
-    sha3_512(reinterpret_cast<const uint8_t*>(millionA.c_str()), millionA.size(), &out[0]);
+    sha3<512>(reinterpret_cast<const uint8_t*>(millionA.c_str()), millionA.size(), &out[0]);
     result = HexStr(out.begin(), out.end());
     EXPECT_EQ(
         result,
@@ -101,23 +164,23 @@ TEST(simplecrypto_cxx, keccak_256_test)
 {
     std::string s = "abc";
     std::vector<uint8_t> out(32);
-    keccak_256(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    keccak<256>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
     std::string result = HexStr(out.begin(), out.end());
     EXPECT_EQ(result, "4e03657aea45a94fc7d47ba826c8d667c0d1e6e33a64a036ec44f58fa12d6c45");
 
     s = "";
-    keccak_256(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    keccak<256>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
     result = HexStr(out.begin(), out.end());
     EXPECT_EQ(result, "c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470");
 
     s = "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq";
-    keccak_256(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    keccak<256>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
     result = HexStr(out.begin(), out.end());
     EXPECT_EQ(result, "45d3b367a6904e6e8d502ee04999a7c27647f91fa845d456525fd352ae3d7371");
 
     s = "abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlm"
         "nopqrsmnopqrstnopqrstu";
-    keccak_256(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    keccak<256>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
     result = HexStr(out.begin(), out.end());
     EXPECT_EQ(result, "f519747ed599024f3882238e5ab43960132572b7345fbeb9a90769dafd21ad67");
 }
@@ -126,7 +189,7 @@ TEST(simplecrypto_cxx, keccak_512_test)
 {
     std::string s = "abc";
     std::vector<uint8_t> out(64);
-    keccak_512(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    keccak<512>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
     std::string result = HexStr(out.begin(), out.end());
     EXPECT_EQ(
         result,
@@ -134,7 +197,7 @@ TEST(simplecrypto_cxx, keccak_512_test)
         "2629379540c17e2a65b19d77aa511a9d00bb96");
 
     s = "";
-    keccak_512(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    keccak<512>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
     result = HexStr(out.begin(), out.end());
     EXPECT_EQ(
         result,
@@ -142,7 +205,7 @@ TEST(simplecrypto_cxx, keccak_512_test)
         "6713b435f091ef2769fb160cdab33d3670680e");
 
     s = "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq";
-    keccak_512(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    keccak<512>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
     result = HexStr(out.begin(), out.end());
     EXPECT_EQ(
         result,
@@ -151,7 +214,7 @@ TEST(simplecrypto_cxx, keccak_512_test)
 
     s = "abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlm"
         "nopqrsmnopqrstnopqrstu";
-    keccak_512(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    keccak<512>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
     result = HexStr(out.begin(), out.end());
     EXPECT_EQ(
         result,
