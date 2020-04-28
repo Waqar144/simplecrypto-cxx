@@ -1,4 +1,4 @@
-add_library(simplecrypto-cxx base58.cpp sha256.cpp sha512.cpp ripemd160.cpp hmac.cpp pbkdf2.cpp)
+add_library(simplecrypto-cxx base58.cpp sha256.cpp sha512.cpp ripemd160.cpp hmac.cpp pbkdf2.cpp sha3.cpp)
 
 add_library(project_options INTERFACE)
 target_compile_features(project_options INTERFACE cxx_std_17)
