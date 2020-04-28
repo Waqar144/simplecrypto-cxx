@@ -1,18 +1,26 @@
 # Simple Crypto library
 
-This is a work in progress. The intention is to provide most of the crypto algorithms that are safe, fast and easy to use. Moreover, I want to make the files independent of each other so that if someone wants only one thing for e.g., sha256, they only need to use the 'sha256.h' and not link against the whole library.
+This is a work in progress. The intention is to provide c++ interface to most of the crypto hashing algorithms that are safe, fast and easy to use.
 
 The code is not all mine, most of it is C code written by other people. I am trying to rewrite parts of the code to use modern c++ features and constructs.
 
 ## Currently available:
 - SHA-256
 - SHA-512
+- SHA3-224
+- SHA3-256
+- SHA3-384
+- SHA3-512
+- Keccak-224
+- Keccak-256
+- Keccak-384
+- Keccak-512
 - HMAC SHA-256
 - HMAC SHA-512
 - PBKDF2 SHA-256
 - PBKDF2 SHA-512
+- RIPEMD 160
 - Base 58
-- RIPEMD 160 (ready, basically c code)
 
 ## Build
 
@@ -29,6 +37,8 @@ make bench #benchmarks
 ```
 
 ## Usage
+
+//TODO: Add a separate usage doc
 
 ### SHA-256 / SHA-512
 
