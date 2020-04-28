@@ -328,10 +328,17 @@ void ripemd160_Final( RIPEMD160_CTX *ctx, uint8_t output[RIPEMD160_DIGEST_LENGTH
 /*
  * output = RIPEMD-160( input buffer )
  */
-void ripemd160(const uint8_t *msg, uint32_t msg_len, uint8_t hash[RIPEMD160_DIGEST_LENGTH])
+void ripemd160(const uint8_t* msg, size_t msg_len, uint8_t hash[RIPEMD160_DIGEST_LENGTH])
 {
     RIPEMD160_CTX ctx;
     ripemd160_Init( &ctx );
-    ripemd160_Update( &ctx, msg, msg_len );
+    ripemd160_Update(&ctx, msg, static_cast<uint32_t>(msg_len));
     ripemd160_Final( &ctx, hash );
+}
+
+std::vector<uint8_t> ripemd160(const std::vector<uint8_t>& data)
+{
+    std::vector<uint8_t> out(RIPEMD160_DIGEST_LENGTH);
+    ripemd160(data.data(), data.size(), &out[0]);
+    return out;
 }
