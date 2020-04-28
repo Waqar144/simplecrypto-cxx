@@ -160,6 +160,31 @@ TEST(simplecrypto_cxx, sha3_512_test)
         "89b266a8aa18ace8282a0e0db596c90b0a7b87");
 }
 
+TEST(simplecrypto_cxx, keccak_224_test)
+{
+    std::string s = "abc";
+    std::vector<uint8_t> out(28);
+    keccak<224>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    std::string result = HexStr(out.begin(), out.end());
+    EXPECT_EQ(result, "c30411768506ebe1c2871b1ee2e87d38df342317300a9b97a95ec6a8");
+
+    s = "";
+    keccak<224>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    result = HexStr(out.begin(), out.end());
+    EXPECT_EQ(result, "f71837502ba8e10837bdd8d365adb85591895602fc552b48b7390abd");
+
+    s = "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq";
+    keccak<224>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    result = HexStr(out.begin(), out.end());
+    EXPECT_EQ(result, "e51faa2b4655150b931ee8d700dc202f763ca5f962c529eae55012b6");
+
+    s = "abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlm"
+        "nopqrsmnopqrstnopqrstu";
+    keccak<224>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    result = HexStr(out.begin(), out.end());
+    EXPECT_EQ(result, "344298994b1b06873eae2ce739c425c47291a2e24189e01b524f88dc");
+}
+
 TEST(simplecrypto_cxx, keccak_256_test)
 {
     std::string s = "abc";
@@ -183,6 +208,43 @@ TEST(simplecrypto_cxx, keccak_256_test)
     keccak<256>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
     result = HexStr(out.begin(), out.end());
     EXPECT_EQ(result, "f519747ed599024f3882238e5ab43960132572b7345fbeb9a90769dafd21ad67");
+}
+
+TEST(simplecrypto_cxx, keccak_384_test)
+{
+    std::string s = "abc";
+    std::vector<uint8_t> out(48);
+    keccak<384>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    std::string result = HexStr(out.begin(), out.end());
+    EXPECT_EQ(
+        result,
+        "f7df1165f033337be098e7d288ad6a2f74409d7a60b49c36642218de161b1f99f8c681e4afaf31a34db29fb763"
+        "e3c28e");
+
+    s = "";
+    keccak<384>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    result = HexStr(out.begin(), out.end());
+    EXPECT_EQ(
+        result,
+        "2c23146a63a29acf99e73b88f8c24eaa7dc60aa771780ccc006afbfa8fe2479b2dd2b21362337441ac12b51591"
+        "1957ff");
+
+    s = "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq";
+    keccak<384>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    result = HexStr(out.begin(), out.end());
+    EXPECT_EQ(
+        result,
+        "b41e8896428f1bcbb51e17abd6acc98052a3502e0d5bf7fa1af949b4d3c855e7c4dc2c390326b3f3e74c7b1e2b"
+        "9a3657");
+
+    s = "abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlm"
+        "nopqrsmnopqrstnopqrstu";
+    keccak<384>(reinterpret_cast<const uint8_t*>(s.c_str()), s.size(), &out[0]);
+    result = HexStr(out.begin(), out.end());
+    EXPECT_EQ(
+        result,
+        "cc063f34685135368b34f7449108f6d10fa727b09d696ec5331771da46a923b6c34dbd1d4f77e595689c1f3800"
+        "681c28");
 }
 
 TEST(simplecrypto_cxx, keccak_512_test)
