@@ -23,10 +23,15 @@
 #include <cstring>
 #include <string>
 
-#define I64(x) x##LL
-#define ROTL64(qword, n) ((qword) << (n) ^ ((qword) >> (64 - (n))))
-#define le2me_64(x) (x)
-#define IS_ALIGNED_64(p) (0 == (7 & ((const char*)(p) - (const char*)0)))
+inline static constexpr uint64_t ROTL64(uint64_t qword, int n)
+{
+    return (qword << n) ^ (qword >> (64 - n));
+}
+
+inline static constexpr bool isAligned64(const unsigned char* p)
+{
+    return (0 == (7 & (p - (const unsigned char*)0)));
+}
 #define me64_to_le_str(to, from, length) memcpy((to), (from), (length))
 
 /* constants */
@@ -34,14 +39,12 @@ static constexpr int NumberOfRounds = 24;
 
 /* SHA3 (Keccak) constants for 24 rounds */
 static uint64_t keccak_round_constants[NumberOfRounds] = {
-    I64(0x0000000000000001), I64(0x0000000000008082), I64(0x800000000000808A),
-    I64(0x8000000080008000), I64(0x000000000000808B), I64(0x0000000080000001),
-    I64(0x8000000080008081), I64(0x8000000000008009), I64(0x000000000000008A),
-    I64(0x0000000000000088), I64(0x0000000080008009), I64(0x000000008000000A),
-    I64(0x000000008000808B), I64(0x800000000000008B), I64(0x8000000000008089),
-    I64(0x8000000000008003), I64(0x8000000000008002), I64(0x8000000000000080),
-    I64(0x000000000000800A), I64(0x800000008000000A), I64(0x8000000080008081),
-    I64(0x8000000000008080), I64(0x0000000080000001), I64(0x8000000080008008)};
+    0x0000000000000001LL, 0x0000000000008082LL, 0x800000000000808ALL, 0x8000000080008000LL,
+    0x000000000000808BLL, 0x0000000080000001LL, 0x8000000080008081LL, 0x8000000000008009LL,
+    0x000000000000008ALL, 0x0000000000000088LL, 0x0000000080008009LL, 0x000000008000000ALL,
+    0x000000008000808BLL, 0x800000000000008BLL, 0x8000000000008089LL, 0x8000000000008003LL,
+    0x8000000000008002LL, 0x8000000000000080LL, 0x000000000000800ALL, 0x800000008000000ALL,
+    0x8000000080008081LL, 0x8000000000008080LL, 0x0000000080000001LL, 0x8000000080008008};
 
 /* Initializing a sha3 context for given number of output bits */
 static void keccak_Init(SHA3_CTX* ctx, unsigned bits)
@@ -190,42 +193,40 @@ static void sha3_permutation(uint64_t* state)
 static void sha3_process_block(uint64_t hash[25], const uint64_t* block, size_t block_size)
 {
     /* expanded loop */
-    hash[0] ^= le2me_64(block[0]);
-    hash[1] ^= le2me_64(block[1]);
-    hash[2] ^= le2me_64(block[2]);
-    hash[3] ^= le2me_64(block[3]);
-    hash[4] ^= le2me_64(block[4]);
-    hash[5] ^= le2me_64(block[5]);
-    hash[6] ^= le2me_64(block[6]);
-    hash[7] ^= le2me_64(block[7]);
-    hash[8] ^= le2me_64(block[8]);
+    hash[0] ^= block[0];
+    hash[1] ^= block[1];
+    hash[2] ^= block[2];
+    hash[3] ^= block[3];
+    hash[4] ^= block[4];
+    hash[5] ^= block[5];
+    hash[6] ^= block[6];
+    hash[7] ^= block[7];
+    hash[8] ^= block[8];
     /* if not sha3-512 */
     if (block_size > 72) {
-        hash[9] ^= le2me_64(block[9]);
-        hash[10] ^= le2me_64(block[10]);
-        hash[11] ^= le2me_64(block[11]);
-        hash[12] ^= le2me_64(block[12]);
+        hash[9] ^= block[9];
+        hash[10] ^= block[10];
+        hash[11] ^= block[11];
+        hash[12] ^= block[12];
         /* if not sha3-384 */
         if (block_size > 104) {
-            hash[13] ^= le2me_64(block[13]);
-            hash[14] ^= le2me_64(block[14]);
-            hash[15] ^= le2me_64(block[15]);
-            hash[16] ^= le2me_64(block[16]);
+            hash[13] ^= block[13];
+            hash[14] ^= block[14];
+            hash[15] ^= block[15];
+            hash[16] ^= block[16];
             /* if not sha3-256 */
             if (block_size > 136) {
-                hash[17] ^= le2me_64(block[17]);
-#ifdef FULL_SHA3_FAMILY_SUPPORT
+                hash[17] ^= block[17];
                 /* if not sha3-224 */
                 if (block_size > 144) {
-                    hash[18] ^= le2me_64(block[18]);
-                    hash[19] ^= le2me_64(block[19]);
-                    hash[20] ^= le2me_64(block[20]);
-                    hash[21] ^= le2me_64(block[21]);
-                    hash[22] ^= le2me_64(block[22]);
-                    hash[23] ^= le2me_64(block[23]);
-                    hash[24] ^= le2me_64(block[24]);
+                    hash[18] ^= block[18];
+                    hash[19] ^= block[19];
+                    hash[20] ^= block[20];
+                    hash[21] ^= block[21];
+                    hash[22] ^= block[22];
+                    hash[23] ^= block[23];
+                    hash[24] ^= block[24];
                 }
-#endif
             }
         }
     }
@@ -266,7 +267,7 @@ void sha3_Update(SHA3_CTX* ctx, const unsigned char* msg, size_t size)
     }
     while (size >= block_size) {
         uint64_t* aligned_message_block;
-        if (IS_ALIGNED_64(msg)) {
+        if (isAligned64(msg)) {
             /* the most common case is processing of an already aligned message
             without copying it */
             aligned_message_block = (uint64_t*)(void*)msg;
