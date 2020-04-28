@@ -23,6 +23,7 @@
 #include <cstdint>
 #include <stddef.h>
 #include <type_traits>
+#include <vector>
 
 static constexpr size_t sha3_224_hash_size = 28;
 static constexpr size_t sha3_256_hash_size = 32;
@@ -68,21 +69,40 @@ void sha3_Final(SHA3_CTX* ctx, unsigned char* result);
 const auto keccak_Update = sha3_Update;
 void keccak_Final(SHA3_CTX* ctx, unsigned char* result);
 
-void keccak_256(const unsigned char* data, size_t len, unsigned char* digest);
-void keccak_512(const unsigned char* data, size_t len, unsigned char* digest);
-
 template <
     size_t BITS,
     typename = typename std::enable_if<BITS == 224 || BITS == 256 || BITS == 384 || BITS == 512>::type>
 void keccak(const unsigned char* data, size_t len, unsigned char* digest);
 
-template <size_t BITS>
+template <
+    size_t BITS,
+    typename = typename std::enable_if<BITS == 224 || BITS == 256 || BITS == 384 || BITS == 512>::type>
+std::vector<uint8_t> keccak(const std::vector<uint8_t>& data)
+{
+    std::vector<uint8_t> output(BITS / 8);
+    keccak<BITS>(data.data(), data.size(), &output[0]);
+    return output;
+}
+
+template <
+    size_t BITS,
+    typename = typename std::enable_if<BITS == 224 || BITS == 256 || BITS == 384 || BITS == 512>::type>
 void sha3(const unsigned char* data, size_t len, unsigned char* digest)
 {
     SHA3_CTX ctx;
     sha3_Init<BITS>(&ctx);
     sha3_Update(&ctx, data, len);
     sha3_Final(&ctx, digest);
+}
+
+template <
+    size_t BITS,
+    typename = typename std::enable_if<BITS == 224 || BITS == 256 || BITS == 384 || BITS == 512>::type>
+std::vector<uint8_t> sha3(const std::vector<uint8_t>& data)
+{
+    std::vector<uint8_t> output(BITS / 8);
+    sha3<BITS>(data.data(), data.size(), &output[0]);
+    return output;
 }
 
 #endif /* __SHA3_H__ */
