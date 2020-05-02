@@ -1,5 +1,6 @@
 #include <benchmark/benchmark.h>
 
+#include "blake3.h"
 #include "hmac.h"
 #include "pbkdf2.h"
 #include "sha256.h"
@@ -193,6 +194,14 @@ static void BM_PBKDF2_SHA512_CPP_VEC(benchmark::State& state)
     }
 }
 
+static void BM_BLAKE3_HASH(benchmark::State& state)
+{
+    auto str = strToVec("abc");
+    std::vector<uint8_t> out(32);
+    for (auto _ : state) {
+        hashBlake3(str, out);
+    }
+}
 
 BENCHMARK(BM_SHA256);
 BENCHMARK(BM_SHA512);
@@ -212,5 +221,7 @@ BENCHMARK(BM_PBKDF2_SHA256_CPP);
 BENCHMARK(BM_PBKDF2_SHA512_CPP);
 BENCHMARK(BM_PBKDF2_SHA256_CPP_VEC);
 BENCHMARK(BM_PBKDF2_SHA512_CPP_VEC);
+
+BENCHMARK(BM_BLAKE3_HASH);
 
 BENCHMARK_MAIN();
