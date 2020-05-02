@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.12)
 
 project(simplecrypto-cxx)
 
@@ -40,4 +40,5 @@ target_link_libraries(bench PRIVATE benchmark::benchmark simplecrypto-cxx)
 endif()
 
 target_link_libraries(main PRIVATE simplecrypto-cxx)
+target_link_libraries(main PRIVATE blake3lib)
 

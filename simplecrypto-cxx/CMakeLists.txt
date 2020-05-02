@@ -1,6 +1,6 @@
-add_library(simplecrypto-cxx base58.cpp sha256.cpp sha512.cpp ripemd160.cpp hmac.cpp pbkdf2.cpp sha3.cpp)
-
+add_library(simplecrypto-cxx base58.cpp sha256.cpp sha512.cpp ripemd160.cpp hmac.cpp pbkdf2.cpp sha3.cpp blake3.cpp)
 add_library(project_options INTERFACE)
+
 target_compile_features(project_options INTERFACE cxx_std_17)
 
 if(${CMAKE_VERSION} VERSION_LESS "3.12.4")
@@ -16,6 +16,10 @@ add_library(project_warnings INTERFACE)
 # standard compiler warnings
 include(cmake/warnings.cmake)
 set_project_warnings(project_warnings)
+
+#BLAKE-3 Library
+add_subdirectory(blake3)
+target_link_libraries(simplecrypto-cxx PRIVATE blake3lib)
 
 target_link_libraries(simplecrypto-cxx INTERFACE project_warnings)
 target_link_libraries(simplecrypto-cxx INTERFACE project_options )
