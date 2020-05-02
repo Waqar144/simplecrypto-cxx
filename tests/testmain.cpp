@@ -3,8 +3,10 @@
 #include "pbkdf2.h"
 #include "ripemd160.h"
 #include "sha256.h"
-#include "sha3_tests.h"
 #include "sha512.h"
+
+#include "blake3_tests.h"
+#include "sha3_tests.h"
 
 #include <gtest/gtest.h>
 
