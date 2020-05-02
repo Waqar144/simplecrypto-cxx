@@ -98,21 +98,27 @@ endif()
 
 mark_as_advanced(HAVE_SSE, HAVE_AVX, HAVE_AVX2)
 
+#disable AVX512 for now
+set(BLAKE3_COMPILE_DEFS BLAKE3_NO_AVX512)
 
 set(BLAKE3_LIB_SOURCES blake3.c blake3_dispatch.c blake3_portable.c)
 set(BLAKE3_COMPILE_OPTIONS "")
+
 if (HAVE_SSE)
     list(APPEND BLAKE3_LIB_SOURCES blake3_sse41.c)
     list(APPEND BLAKE3_COMPILE_OPTIONS -msse4.1)
+else()
+    list(APPEND BLAKE3_COMPILE_DEFS BLAKE3_NO_SSE41)
 endif()
 if (HAVE_AVX2)
     list(APPEND BLAKE3_LIB_SOURCES blake3_avx2.c)
     list(APPEND BLAKE3_COMPILE_OPTIONS -mavx2)
+else()
+    list(APPEND BLAKE3_COMPILE_DEFS BLAKE3_NO_AVX2)
 endif()
 
 add_library(blake3lib ${BLAKE3_LIB_SOURCES})
 target_compile_options(blake3lib PRIVATE ${BLAKE3_COMPILE_OPTIONS})
-#disable AVX512 for now
-set(BLAKE3_COMPILE_DEFS BLAKE3_NO_AVX512)
+
 target_compile_definitions(blake3lib PUBLIC ${BLAKE3_COMPILE_DEFS})
 
