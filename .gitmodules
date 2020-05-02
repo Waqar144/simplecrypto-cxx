@@ -7,3 +7,6 @@
 [submodule "3rdparty/googletest"]
 	path = 3rdparty/googletest
 	url = https://github.com/google/googletest.git
+[submodule "simplecrypto-cxx/blake3/BLAKE3"]
+	path = simplecrypto-cxx/blake3/BLAKE3
+	url = https://github.com/BLAKE3-team/BLAKE3.git

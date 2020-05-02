@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-#include "blake3/blake3.h"
+#include "blake3/BLAKE3/c/blake3.h"
 
 template <typename Container>
 void hashBlake3(const Container& in, std::vector<uint8_t>& out)
