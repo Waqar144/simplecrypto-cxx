@@ -26,7 +26,7 @@ if (ENABLE_SSE)
         message(STATUS "SSE4.1 is enabled - target CPU must support it")
     endif()
 
-    if (ENABLE_AVX)
+    if (ENABLE_AVX512)
 
         #
         # Check compiler for AVX intrinsics
