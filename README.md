@@ -5,6 +5,9 @@ This is a work in progress. The intention is to provide c++ interface to most of
 The code is not all mine, most of it is C code written by other people. I am trying to rewrite parts of the code to use modern c++ features and constructs.
 
 ## Currently available:
+- BLAKE3
+- BLAKE3 keyed hash
+- BLAKE3 key derivation
 - SHA-256
 - SHA-512
 - SHA3-224
