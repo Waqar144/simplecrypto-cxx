@@ -203,6 +203,26 @@ static void BM_BLAKE3_HASH(benchmark::State& state)
     }
 }
 
+static void BM_BLAKE3_KEYED_HASH(benchmark::State& state)
+{
+    const std::string str = "abc";
+    const std::string key = "key";
+    std::vector<uint8_t> out(32);
+    for (auto _ : state) {
+        hashBlake3_keyed(str, key, out);
+    }
+}
+
+static void BM_BLAKE3_KEY_DERIVE(benchmark::State& state)
+{
+    const std::string str = "abc";
+    const std::string key = "key";
+    std::vector<uint8_t> out(32);
+    for (auto _ : state) {
+        hashBlake3_deriveKey(str, key, out);
+    }
+}
+
 BENCHMARK(BM_SHA256);
 BENCHMARK(BM_SHA512);
 BENCHMARK(BM_SHA256CPP);
@@ -223,5 +243,7 @@ BENCHMARK(BM_PBKDF2_SHA256_CPP_VEC);
 BENCHMARK(BM_PBKDF2_SHA512_CPP_VEC);
 
 BENCHMARK(BM_BLAKE3_HASH);
+BENCHMARK(BM_BLAKE3_KEYED_HASH);
+BENCHMARK(BM_BLAKE3_KEY_DERIVE);
 
 BENCHMARK_MAIN();
