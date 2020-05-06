@@ -4,6 +4,7 @@
 #include "hmac.h"
 #include "pbkdf2.h"
 #include "sha256.h"
+#include "sha3.h"
 #include "sha512.h"
 
 std::vector<uint8_t> strToVec(const std::string& s)
@@ -223,6 +224,26 @@ static void BM_BLAKE3_KEY_DERIVE(benchmark::State& state)
     }
 }
 
+static void BM_SHA3_512(benchmark::State& state)
+{
+    const std::string str = "abc";
+    auto data = reinterpret_cast<const uint8_t*>(str.data());
+    std::vector<uint8_t> out(64);
+    for (auto _ : state) {
+        sha3<512>(data, str.size(), &out[0]);
+    }
+}
+
+static void BM_Keccak_512(benchmark::State& state)
+{
+    const std::string str = "abc";
+    auto data = reinterpret_cast<const uint8_t*>(str.data());
+    std::vector<uint8_t> out(64);
+    for (auto _ : state) {
+        keccak<512>(data, str.size(), &out[0]);
+    }
+}
+
 BENCHMARK(BM_SHA256);
 BENCHMARK(BM_SHA512);
 BENCHMARK(BM_SHA256CPP);
@@ -245,5 +266,9 @@ BENCHMARK(BM_PBKDF2_SHA512_CPP_VEC);
 BENCHMARK(BM_BLAKE3_HASH);
 BENCHMARK(BM_BLAKE3_KEYED_HASH);
 BENCHMARK(BM_BLAKE3_KEY_DERIVE);
+
+BENCHMARK(BM_SHA3_512);
+BENCHMARK(BM_Keccak_512);
+
 
 BENCHMARK_MAIN();
