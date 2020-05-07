@@ -8,7 +8,9 @@ The code is not all mine, most of it is C code written by other people. I am try
 - BLAKE3
 - BLAKE3 keyed hash
 - BLAKE3 key derivation
+- SHA-224
 - SHA-256
+- SHA-384
 - SHA-512
 - SHA3-224
 - SHA3-256
@@ -61,5 +63,10 @@ MIT
 
 ## Credits
 
-Most of the code comes from trezor-crypto libraries.
-TODO: update this part
+Most of the code comes from other libraries.
+
+- Base58: https://github.com/luke-jr/libbase58
+- BLAKE3: https://github.com/BLAKE3-team/BLAKE3
+- RIPEMD-160: https://github.com/ARMmbed/mbedtls
+- SHA1/SHA2: http://www.aarongifford.com/computers/sha.html
+- SHA3: https://github.com/rhash/RHash
