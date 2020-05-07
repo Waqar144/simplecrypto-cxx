@@ -2,6 +2,7 @@
 #include "hmac.h"
 #include "pbkdf2.h"
 #include "ripemd160.h"
+#include "sha224.h"
 #include "sha256.h"
 #include "sha512.h"
 
@@ -10,11 +11,43 @@
 
 #include <gtest/gtest.h>
 
+TEST(simplecrypto_cxx, sha224Test)
+{
+    std::string s = "";
+    std::string s1 = "019283109238ksla;jdxcv0z98cv012;lkk;asdjfkjxcv08091823091283kljvl;kxcj";
+    std::string s2 = "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq";
+    std::string s3 = "@#)*()(*)!(@*0";
+    std::vector<uint8_t> out(SHA224_RAW_BYTES_LENGTH);
+    sha224(reinterpret_cast<const uint8_t*>(s.c_str()), s.length(), &out[0]);
+    std::string expected = HexStr(out.begin(), out.end());
+    EXPECT_EQ(expected, "d14a028c2a3a2bc9476102bb288234c415a2b01f828ea62ac5b3e42f");
+
+    sha224(reinterpret_cast<const uint8_t*>(s1.c_str()), s1.length(), &out[0]);
+    expected = HexStr(out.begin(), out.end());
+    EXPECT_EQ(expected, "f96be589fcd6492a5cb8d87747e117154c3f50157673db24f8f767f8");
+
+    sha224(reinterpret_cast<const uint8_t*>(s2.c_str()), s2.length(), &out[0]);
+    expected = HexStr(out.begin(), out.end());
+    EXPECT_EQ(expected, "4d7b7e36d75e81e1cb731ba85d69b60adaef340e58a0ed732fc9d4ef");
+
+    sha224(reinterpret_cast<const uint8_t*>(s3.c_str()), s3.length(), &out[0]);
+    expected = HexStr(out.begin(), out.end());
+    EXPECT_EQ(expected, "f89da26e58e404abd06b8b14f1d47170d156f16c52b471c9e7712634");
+
+    /** template test using string and vector as inputs */
+
+    auto output = sha224(s);
+    expected = HexStr(output.begin(), output.end());
+    EXPECT_EQ(expected, "d14a028c2a3a2bc9476102bb288234c415a2b01f828ea62ac5b3e42f");
+
+    output = sha224(std::vector<uint8_t>(s.begin(), s.end()));
+    expected = HexStr(output.begin(), output.end());
+    EXPECT_EQ(expected, "d14a028c2a3a2bc9476102bb288234c415a2b01f828ea62ac5b3e42f");
+}
+
 /**
  * Test vectors are taken from https://www.di-mgt.com.au/sha_testvectors.html
  */
-
-
 TEST(simplecrypto_cxx, sha256Test)
 {
     std::string s = "hello";
