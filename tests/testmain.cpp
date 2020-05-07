@@ -11,12 +11,17 @@
 
 #include <gtest/gtest.h>
 
+/**
+ * Test vectors are taken from https://www.di-mgt.com.au/sha_testvectors.html
+ */
 TEST(simplecrypto_cxx, sha224Test)
 {
     std::string s = "";
-    std::string s1 = "The quick brown fox jumps over the lazy dog";
+    std::string s1 = "abc";
     std::string s2 = "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq";
-    std::string s3 = "@#)*()(*)!(@*0";
+    std::string s3 =
+        "abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlm"
+        "nopqrsmnopqrstnopqrstu";
     std::vector<uint8_t> out(SHA224_RAW_BYTES_LENGTH);
     sha224(reinterpret_cast<const uint8_t*>(s.c_str()), s.length(), &out[0]);
     std::string expected = HexStr(out.begin(), out.end());
@@ -24,7 +29,7 @@ TEST(simplecrypto_cxx, sha224Test)
 
     sha224(reinterpret_cast<const uint8_t*>(s1.c_str()), s1.length(), &out[0]);
     expected = HexStr(out.begin(), out.end());
-    EXPECT_EQ(expected, "730e109bd7a8a32b1cb9d9a09aa2325d2430587ddbc0c38bad911525");
+    EXPECT_EQ(expected, "23097d223405d8228642a477bda255b32aadbce4bda0b3f7e36c9da7");
 
     std::vector<uint8_t> o(SHA224_RAW_BYTES_LENGTH);
     sha224(reinterpret_cast<const uint8_t*>(s2.c_str()), s2.length(), &o[0]);
@@ -33,7 +38,13 @@ TEST(simplecrypto_cxx, sha224Test)
 
     sha224(reinterpret_cast<const uint8_t*>(s3.c_str()), s3.length(), &out[0]);
     expected = HexStr(out.begin(), out.end());
-    EXPECT_EQ(expected, "f89da26e58e404abd06b8b14f1d47170d156f16c52b471c9e7712634");
+    EXPECT_EQ(expected, "c97ca9a559850ce97a04a96def6d99a9e0e0e2ab14e6b8df265fc0b3");
+
+    std::string millionA;
+    millionA.resize(1000000, 'a');
+    sha224(reinterpret_cast<const uint8_t*>(millionA.c_str()), millionA.length(), &out[0]);
+    expected = HexStr(out.begin(), out.end());
+    EXPECT_EQ(expected, "20794655980c91d8bbb4c1ea97618a4bf03f42581948b2ee4ee7ad67");
 
     /** template test using string and vector as inputs */
 
@@ -46,9 +57,7 @@ TEST(simplecrypto_cxx, sha224Test)
     EXPECT_EQ(expected, "d14a028c2a3a2bc9476102bb288234c415a2b01f828ea62ac5b3e42f");
 }
 
-/**
- * Test vectors are taken from https://www.di-mgt.com.au/sha_testvectors.html
- */
+
 TEST(simplecrypto_cxx, sha256Test)
 {
     std::string s = "hello";
