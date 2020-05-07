@@ -14,7 +14,7 @@
 TEST(simplecrypto_cxx, sha224Test)
 {
     std::string s = "";
-    std::string s1 = "019283109238ksla;jdxcv0z98cv012;lkk;asdjfkjxcv08091823091283kljvl;kxcj";
+    std::string s1 = "The quick brown fox jumps over the lazy dog";
     std::string s2 = "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq";
     std::string s3 = "@#)*()(*)!(@*0";
     std::vector<uint8_t> out(SHA224_RAW_BYTES_LENGTH);
@@ -24,11 +24,12 @@ TEST(simplecrypto_cxx, sha224Test)
 
     sha224(reinterpret_cast<const uint8_t*>(s1.c_str()), s1.length(), &out[0]);
     expected = HexStr(out.begin(), out.end());
-    EXPECT_EQ(expected, "f96be589fcd6492a5cb8d87747e117154c3f50157673db24f8f767f8");
+    EXPECT_EQ(expected, "730e109bd7a8a32b1cb9d9a09aa2325d2430587ddbc0c38bad911525");
 
-    sha224(reinterpret_cast<const uint8_t*>(s2.c_str()), s2.length(), &out[0]);
-    expected = HexStr(out.begin(), out.end());
-    EXPECT_EQ(expected, "4d7b7e36d75e81e1cb731ba85d69b60adaef340e58a0ed732fc9d4ef");
+    std::vector<uint8_t> o(SHA224_RAW_BYTES_LENGTH);
+    sha224(reinterpret_cast<const uint8_t*>(s2.c_str()), s2.length(), &o[0]);
+    expected = HexStr(o.begin(), o.end());
+    EXPECT_EQ(expected, "75388b16512776cc5dba5da1fd890150b0c6455cb4f58b1952522525");
 
     sha224(reinterpret_cast<const uint8_t*>(s3.c_str()), s3.length(), &out[0]);
     expected = HexStr(out.begin(), out.end());
@@ -36,9 +37,9 @@ TEST(simplecrypto_cxx, sha224Test)
 
     /** template test using string and vector as inputs */
 
-    auto output = sha224(s);
+    auto output = sha224(std::string{"abc"});
     expected = HexStr(output.begin(), output.end());
-    EXPECT_EQ(expected, "d14a028c2a3a2bc9476102bb288234c415a2b01f828ea62ac5b3e42f");
+    EXPECT_EQ(expected, "23097d223405d8228642a477bda255b32aadbce4bda0b3f7e36c9da7");
 
     output = sha224(std::vector<uint8_t>(s.begin(), s.end()));
     expected = HexStr(output.begin(), output.end());

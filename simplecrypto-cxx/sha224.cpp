@@ -121,7 +121,7 @@ void sha224_Transform(
     state_out[4] = state_in[4] + e;
     state_out[5] = state_in[5] + f;
     state_out[6] = state_in[6] + g;
-    state_out[7] = h;
+    state_out[7] = state_in[7] + h;
 }
 
 void sha224_Update(SHA224_CTX* context, const uint8_t* data, size_t len)
