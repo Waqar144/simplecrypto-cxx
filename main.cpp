@@ -4,6 +4,7 @@
 
 #include "hmac.h"
 #include "sha224.h"
+#include "sha384.h"
 #include "sha512.h"
 
 #include "pbkdf2.h"
@@ -35,7 +36,7 @@ int main()
     std::vector<uint8_t> out(SHA224_RAW_BYTES_LENGTH);
     //    std::array<uint8_t, BLAKE3_OUT_LEN> out;
     //    hashBlake3(s, out);
-    out = sha224(s1);
+    out = sha384(s1);
     std::cout << HexStr(out.begin(), out.end());
     return 0;
 }

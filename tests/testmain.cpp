@@ -4,6 +4,7 @@
 #include "ripemd160.h"
 #include "sha224.h"
 #include "sha256.h"
+#include "sha384.h"
 #include "sha512.h"
 
 #include "blake3_tests.h"
@@ -55,6 +56,70 @@ TEST(simplecrypto_cxx, sha224Test)
     output = sha224(std::vector<uint8_t>(s.begin(), s.end()));
     expected = HexStr(output.begin(), output.end());
     EXPECT_EQ(expected, "d14a028c2a3a2bc9476102bb288234c415a2b01f828ea62ac5b3e42f");
+}
+
+TEST(simplecrypto_cxx, sha384Test)
+{
+    std::string s = "";
+    std::string s1 = "abc";
+    std::string s2 = "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq";
+    std::string s3 =
+        "abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlm"
+        "nopqrsmnopqrstnopqrstu";
+    std::vector<uint8_t> out(SHA384_RAW_BYTES_LENGTH);
+    sha384(reinterpret_cast<const uint8_t*>(s.c_str()), s.length(), &out[0]);
+    std::string expected = HexStr(out.begin(), out.end());
+    EXPECT_EQ(
+        expected,
+        "38b060a751ac96384cd9327eb1b1e36a21fdb71114be07434c0cc7bf63f6e1da274edebfe76f65fbd51ad2f148"
+        "98b95b");
+
+    sha384(reinterpret_cast<const uint8_t*>(s1.c_str()), s1.length(), &out[0]);
+    expected = HexStr(out.begin(), out.end());
+    EXPECT_EQ(
+        expected,
+        "cb00753f45a35e8bb5a03d699ac65007272c32ab0eded1631a8b605a43ff5bed8086072ba1e7cc2358baeca134"
+        "c825a7");
+
+    std::vector<uint8_t> o(SHA384_RAW_BYTES_LENGTH);
+    sha384(reinterpret_cast<const uint8_t*>(s2.c_str()), s2.length(), &o[0]);
+    expected = HexStr(o.begin(), o.end());
+    EXPECT_EQ(
+        expected,
+        "3391fdddfc8dc7393707a65b1b4709397cf8b1d162af05abfe8f450de5f36bc6b0455a8520bc4e6f5fe95b1fe3"
+        "c8452b");
+
+    sha384(reinterpret_cast<const uint8_t*>(s3.c_str()), s3.length(), &out[0]);
+    expected = HexStr(out.begin(), out.end());
+    EXPECT_EQ(
+        expected,
+        "09330c33f71147e83d192fc782cd1b4753111b173b3b05d22fa08086e3b0f712fcc7c71a557e2db966c3e9fa91"
+        "746039");
+
+    std::string millionA;
+    millionA.resize(1000000, 'a');
+    sha384(reinterpret_cast<const uint8_t*>(millionA.c_str()), millionA.length(), &out[0]);
+    expected = HexStr(out.begin(), out.end());
+    EXPECT_EQ(
+        expected,
+        "9d0e1809716474cb086e834e310a4a1ced149e9c00f248527972cec5704c2a5b07b8b3dc38ecc4ebae97ddd87f"
+        "3d8985");
+
+    /** template test using string and vector as inputs */
+
+    auto output = sha384(std::string{"abc"});
+    expected = HexStr(output.begin(), output.end());
+    EXPECT_EQ(
+        expected,
+        "cb00753f45a35e8bb5a03d699ac65007272c32ab0eded1631a8b605a43ff5bed8086072ba1e7cc2358baeca134"
+        "c825a7");
+
+    output = sha384(std::vector<uint8_t>(s.begin(), s.end()));
+    expected = HexStr(output.begin(), output.end());
+    EXPECT_EQ(
+        expected,
+        "38b060a751ac96384cd9327eb1b1e36a21fdb71114be07434c0cc7bf63f6e1da274edebfe76f65fbd51ad2f148"
+        "98b95b");
 }
 
 
