@@ -191,7 +191,7 @@ void sha224_Final(SHA224_CTX* context, uint8_t digest[])
         if (usedspace > SHA224_SHORT_BLOCK_LENGTH) {
             std::fill_n(
                 reinterpret_cast<uint8_t*>(context->buffer.data()) + usedspace,
-                SHA224_SHORT_BLOCK_LENGTH - usedspace,
+                SHA224_BLOCK_LENGTH - usedspace,
                 0);
 
 #if BYTE_ORDER == LITTLE_ENDIAN

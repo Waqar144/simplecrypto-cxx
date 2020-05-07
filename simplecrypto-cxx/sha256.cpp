@@ -222,7 +222,7 @@ void sha256_Final(SHA256_CTX* context, uint8_t digest[])
         if (usedspace > SHA256_SHORT_BLOCK_LENGTH) {
             std::fill_n(
                 reinterpret_cast<uint8_t*>(context->buffer.data()) + usedspace,
-                SHA256_SHORT_BLOCK_LENGTH - usedspace,
+                SHA256_BLOCK_LENGTH - usedspace,
                 0);
 
 #if BYTE_ORDER == LITTLE_ENDIAN
