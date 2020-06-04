@@ -12,9 +12,13 @@ endif()
 
 set(BENCHMARK_ENABLE_GTEST_TESTS OFF)
 set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "Suppressing benchmark's tests" FORCE)
+set(BUILD_GMOCK OFF CACHE BOOL "Not building GMock")
+set(INSTALL_GTEST OFF CACHE BOOL "INSTALL_GTEST OFF")
+set(BENCHMARK_ENABLE_INSTALL "BENCHMARK INSTALL OFF" OFF)
+set(BENCHMARK_ENABLE_EXCEPTIONS OFF)
 
-OPTION(SIMPLECRYPTO_ENABLE_BENCH "Enable benchmarks" OFF)
-OPTION(SIMPLECRYPTO_ENABLE_TESTS "Enable testing" OFF)
+option(SIMPLECRYPTO_ENABLE_BENCH "Enable benchmarks" OFF)
+option(SIMPLECRYPTO_ENABLE_TESTS "Enable testing" OFF)
 
 add_subdirectory(simplecrypto-cxx)
 
@@ -26,12 +30,13 @@ if(SIMPLECRYPTO_ENABLE_TESTS)
 add_subdirectory(3rdparty/googletest)
 include_directories(3rdparty/googletest/googletest/include)
 add_subdirectory(tests)
+add_executable(main
+    main.cpp)
+target_link_libraries(main PRIVATE simplecrypto-cxx)
 endif()
 
 include_directories(simplecrypto-cxx)
 
-add_executable(main
-    main.cpp)
 
 if(SIMPLECRYPTO_ENABLE_BENCH)
 add_executable(bench bench.cpp)
@@ -39,6 +44,4 @@ add_executable(bench bench.cpp)
 target_link_libraries(bench PRIVATE benchmark::benchmark simplecrypto-cxx)
 endif()
 
-target_link_libraries(main PRIVATE simplecrypto-cxx)
-target_link_libraries(main PRIVATE blake3lib)
 

@@ -6,7 +6,7 @@
 
 #include <gtest/gtest.h>
 
-void fillVectorWithBytes0to250(std::vector<uint8_t>& in, int bytes)
+void fillVectorWithBytes0to250(std::vector<uint8_t>& in, unsigned int bytes)
 {
     int i = 0;
     in.clear();

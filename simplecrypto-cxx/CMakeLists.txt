@@ -10,9 +10,12 @@ add_library(simplecrypto-cxx
                     sha3.cpp
                     blake3.cpp)
 
-add_library(project_options INTERFACE)
+set_target_properties(simplecrypto-cxx PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED ON
+)
 
-target_compile_features(project_options INTERFACE cxx_std_17)
+add_library(project_options INTERFACE)
 
 if(${CMAKE_VERSION} VERSION_LESS "3.12.4")
         message("Please consider to switch to CMake >= 3.12.4 to enable sanitizers")
@@ -20,6 +23,8 @@ else()
     include(cmake/sanitizers.cmake)
     enable_sanitizers(project_options)
 endif()
+
+target_link_libraries(simplecrypto-cxx INTERFACE project_options)
 
 
 add_library(project_warnings INTERFACE)
