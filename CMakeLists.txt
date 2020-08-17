@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.13)
 
 project(simplecrypto-cxx)
 
@@ -10,7 +10,7 @@ if (MSVC)
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
 endif()
 
-set(BENCHMARK_ENABLE_GTEST_TESTS OFF)
+set(BENCHMARK_ENABLE_GTEST_TESTS OFF CACHE BOOL "Suppressing benchmark's tests" FORCE)
 set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "Suppressing benchmark's tests" FORCE)
 set(BUILD_GMOCK OFF CACHE BOOL "Not building GMock")
 set(INSTALL_GTEST OFF CACHE BOOL "INSTALL_GTEST OFF")

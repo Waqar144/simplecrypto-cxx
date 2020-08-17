@@ -4,6 +4,7 @@
 #include <array>
 #include <cstdint>
 #include <vector>
+#include <string>
 
 static constexpr size_t SHA384_BLOCK_LENGTH = 128;
 static constexpr size_t SHA384_RAW_BYTES_LENGTH = 48;
