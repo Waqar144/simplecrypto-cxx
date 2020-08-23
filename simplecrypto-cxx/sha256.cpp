@@ -87,7 +87,6 @@ void sha256_Transform(
     const std::array<uint32_t, 8>& state_in,
     const std::array<uint32_t, SHA256_BLOCK_LENGTH / sizeof(uint32_t)>& data,
     uint32_t* state_out)
-// void sha256_Transform(const uint32_t* state_in, const uint32_t* data, uint32_t* state_out)
 {
     /* Initialize registers with the prev. intermediate value */
     uint32_t a = state_in[0];
@@ -117,7 +116,18 @@ void sha256_Transform(
         c = b;
         b = a;
         a = T1 + T2;
+        ++j;
 
+        T1 = h + Sigma1(e) + Ch(e, f, g) + K256.at(j) + W256.at(j);
+        T2 = Sigma0(a) + Maj(a, b, c);
+        h = g;
+        g = f;
+        f = e;
+        e = d + T1;
+        d = c;
+        c = b;
+        b = a;
+        a = T1 + T2;
         ++j;
     } while (j < 16);
 
@@ -140,8 +150,66 @@ void sha256_Transform(
         c = b;
         b = a;
         a = T1 + T2;
-
         ++j;
+
+        s0 = W256.at((j + 1) & 0x0f);
+        s0 = sigma0(s0);
+        s1 = W256.at((j + 14) & 0x0f);
+        s1 = sigma1(s1);
+
+        /* Apply the SHA-256 compression function to update a..h */
+        T1 = h + Sigma1(e) + Ch(e, f, g) + K256.at(j) +
+            (W256.at(j & 0x0f) += s1 + W256.at((j + 9) & 0x0f) + s0);
+        T2 = Sigma0(a) + Maj(a, b, c);
+        h = g;
+        g = f;
+        f = e;
+        e = d + T1;
+        d = c;
+        c = b;
+        b = a;
+        a = T1 + T2;
+        ++j;
+
+        /* Part of the message block expansion: */
+        s0 = W256.at((j + 1) & 0x0f);
+        s0 = sigma0(s0);
+        s1 = W256.at((j + 14) & 0x0f);
+        s1 = sigma1(s1);
+
+        /* Apply the SHA-256 compression function to update a..h */
+        T1 = h + Sigma1(e) + Ch(e, f, g) + K256.at(j) +
+            (W256.at(j & 0x0f) += s1 + W256.at((j + 9) & 0x0f) + s0);
+        T2 = Sigma0(a) + Maj(a, b, c);
+        h = g;
+        g = f;
+        f = e;
+        e = d + T1;
+        d = c;
+        c = b;
+        b = a;
+        a = T1 + T2;
+        ++j;
+
+        s0 = W256.at((j + 1) & 0x0f);
+        s0 = sigma0(s0);
+        s1 = W256.at((j + 14) & 0x0f);
+        s1 = sigma1(s1);
+
+        /* Apply the SHA-256 compression function to update a..h */
+        T1 = h + Sigma1(e) + Ch(e, f, g) + K256.at(j) +
+            (W256.at(j & 0x0f) += s1 + W256.at((j + 9) & 0x0f) + s0);
+        T2 = Sigma0(a) + Maj(a, b, c);
+        h = g;
+        g = f;
+        f = e;
+        e = d + T1;
+        d = c;
+        c = b;
+        b = a;
+        a = T1 + T2;
+        ++j;
+
     } while (j < 64);
 
     /* Compute the current intermediate hash value */
