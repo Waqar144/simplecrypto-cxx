@@ -30,9 +30,6 @@ if(SIMPLECRYPTO_ENABLE_TESTS)
 add_subdirectory(3rdparty/googletest)
 include_directories(3rdparty/googletest/googletest/include)
 add_subdirectory(tests)
-add_executable(main
-    main.cpp)
-target_link_libraries(main PRIVATE simplecrypto-cxx)
 endif()
 
 include_directories(simplecrypto-cxx)
