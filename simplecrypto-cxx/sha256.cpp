@@ -32,6 +32,7 @@
 
 #include <string>
 #include <cstring>
+#include <bit>
 
 static constexpr size_t SHA256_SHORT_BLOCK_LENGTH = SHA256_BLOCK_LENGTH - 8;
 
@@ -59,12 +60,12 @@ static constexpr inline uint32_t Reverse32(uint32_t w)
 #endif
 
 // clang-format off
-uint32_t inline Ch(uint32_t x, uint32_t y, uint32_t z) { return z ^ (x & (y ^ z)); }
-uint32_t inline Maj(uint32_t x, uint32_t y, uint32_t z) { return (x & y) | (z & (x | y)); }
-uint32_t inline Sigma0(uint32_t x) { return (x >> 2 | x << 30) ^ (x >> 13 | x << 19) ^ (x >> 22 | x << 10); }
-uint32_t inline Sigma1(uint32_t x) { return (x >> 6 | x << 26) ^ (x >> 11 | x << 21) ^ (x >> 25 | x << 7); }
-uint32_t inline sigma0(uint32_t x) { return (x >> 7 | x << 25) ^ (x >> 18 | x << 14) ^ (x >> 3); }
-uint32_t inline sigma1(uint32_t x) { return (x >> 17 | x << 15) ^ (x >> 19 | x << 13) ^ (x >> 10); }
+uint32_t constexpr inline Ch(uint32_t x, uint32_t y, uint32_t z) { return z ^ (x & (y ^ z)); }
+uint32_t constexpr inline Maj(uint32_t x, uint32_t y, uint32_t z) { return (x & y) | (z & (x | y)); }
+uint32_t constexpr inline Sigma0(uint32_t x) { return std::rotr(x, 2) ^ std::rotr(x, 13) ^ std::rotr(x, 22); }
+uint32_t constexpr inline Sigma1(uint32_t x) { return std::rotr(x, 6) ^ std::rotr(x, 11) ^ std::rotr(x, 25); }
+uint32_t constexpr inline sigma0(uint32_t x) { return std::rotr(x, 7) ^ std::rotr(x, 18) ^ (x >> 3);   }
+uint32_t constexpr inline sigma1(uint32_t x) { return std::rotr(x, 17) ^ std::rotr(x, 19) ^ (x >> 10); }
 // clang-format on
 
 
@@ -242,12 +243,14 @@ void sha256_Update(SHA256_CTX* context, const uint8_t* data, size_t len)
             context->bitcount += freespace << 3;
             len -= freespace;
             data += freespace;
-#if BYTE_ORDER == LITTLE_ENDIAN
-            /* Convert TO host byte order */
-            for (int j = 0; j < 16; ++j) {
-                context->buffer[j] = Reverse32(context->buffer[j]);
+
+            if constexpr (std::endian::native == std::endian::little) {
+                /* Convert to host byte order */
+                for (int j = 0; j < 16; ++j) {
+                    context->buffer[j] = Reverse32(context->buffer[j]);
+                }
             }
-#endif
+
             sha256_Transform(context->state, context->buffer, context->state.data());
         } else {
             /* The buffer is not yet full */
@@ -261,12 +264,14 @@ void sha256_Update(SHA256_CTX* context, const uint8_t* data, size_t len)
     while (len >= SHA256_BLOCK_LENGTH) {
         /* Process as many complete blocks as we can */
         std::memcpy(context->buffer.data(), data, SHA256_BLOCK_LENGTH);
-#if BYTE_ORDER == LITTLE_ENDIAN
-        /* Convert TO host byte order */
-        for (int j = 0; j < 16; ++j) {
-            context->buffer[j] = Reverse32(context->buffer[j]);
+
+        if constexpr (std::endian::native == std::endian::little) {
+            /* Convert to host byte order */
+            for (int j = 0; j < 16; ++j) {
+                context->buffer[j] = Reverse32(context->buffer[j]);
+            }
         }
-#endif
+
         sha256_Transform(context->state, context->buffer, context->state.data());
         context->bitcount += SHA256_BLOCK_LENGTH << 3;
         len -= SHA256_BLOCK_LENGTH;
@@ -293,12 +298,13 @@ void sha256_Final(SHA256_CTX* context, uint8_t digest[])
                 SHA256_BLOCK_LENGTH - usedspace,
                 0);
 
-#if BYTE_ORDER == LITTLE_ENDIAN
-            /* Convert TO host byte order */
-            for (int j = 0; j < 16; ++j) {
-                context->buffer[j] = Reverse32(context->buffer[j]);
+            if constexpr (std::endian::native == std::endian::little) {
+                /* Convert to host byte order */
+                for (int j = 0; j < 16; ++j) {
+                    context->buffer[j] = Reverse32(context->buffer[j]);
+                }
             }
-#endif
+
             /* Do second-to-last transform: */
             sha256_Transform(context->state, context->buffer, context->state.data());
 
@@ -311,12 +317,13 @@ void sha256_Final(SHA256_CTX* context, uint8_t digest[])
             SHA256_SHORT_BLOCK_LENGTH - usedspace,
             0);
 
-#if BYTE_ORDER == LITTLE_ENDIAN
-        /* Convert TO host byte order */
-        for (int j = 0; j < 14; ++j) {
-            context->buffer[j] = Reverse32(context->buffer[j]);
+        if constexpr (std::endian::native == std::endian::little) {
+            /* Convert to host byte order */
+            for (int j = 0; j < 14; ++j) {
+                context->buffer[j] = Reverse32(context->buffer[j]);
+            }
         }
-#endif
+
         /* Set the bit count: */
         context->buffer[14] = context->bitcount >> 32;
         context->buffer[15] = context->bitcount & 0xffffffff;
@@ -324,12 +331,13 @@ void sha256_Final(SHA256_CTX* context, uint8_t digest[])
         /* Final transform: */
         sha256_Transform(context->state, context->buffer, context->state.data());
 
-#if BYTE_ORDER == LITTLE_ENDIAN
-        /* Convert FROM host byte order */
-        for (int j = 0; j < 8; ++j) {
-            context->state[j] = Reverse32(context->state[j]);
+        if constexpr (std::endian::native == std::endian::little) {
+            /* Convert from host byte order */
+            for (int j = 0; j < 8; ++j) {
+                context->state[j] = Reverse32(context->state[j]);
+            }
         }
-#endif
+
         std::memcpy(digest, context->state.data(), SHA256_RAW_BYTES_LENGTH);
     }
 
